@@ -1,16 +1,22 @@
 import React, { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { useAuth } from "../context/AuthContext";
 
-export const AuthPage: React.FC = () => {
-  const { signIn, signUp } = useAuth();
+export const SignIn: React.FC = () => {
+  const { signIn, isAuthenticated } = useAuth();
+  const navigate = useNavigate();
 
-  const [isLogin, setIsLogin] = useState(true);
+  // Redirect if already authenticated
+  React.useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard", { replace: true });
+    }
+  }, [isAuthenticated, navigate]);
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [message, setMessage] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Map Supabase error messages to user-friendly messages
@@ -19,25 +25,19 @@ export const AuthPage: React.FC = () => {
       "Invalid login credentials":
         "Incorrect email or password. Please try again.",
       "Email not confirmed": "Please verify your email before signing in.",
-      "User already registered": "An account with this email already exists.",
-      "Password should be at least 6 characters":
-        "Password must be at least 6 characters long.",
       "Unable to validate email address: invalid format":
         "Please enter a valid email address.",
-      "Signup requires a valid password": "Please enter a valid password.",
       "Email rate limit exceeded": "Too many attempts. Please try again later.",
       "For security purposes, you can only request this once every 60 seconds":
         "Please wait a moment before trying again.",
     };
 
-    // Check for partial matches
     for (const [key, value] of Object.entries(errorMap)) {
       if (errorMsg.toLowerCase().includes(key.toLowerCase())) {
         return value;
       }
     }
 
-    // Default message for unknown errors
     return errorMsg || "An error occurred. Please try again.";
   };
 
@@ -60,24 +60,23 @@ export const AuthPage: React.FC = () => {
       return "Password must be at least 6 characters long.";
     }
 
-    if (!isLogin && !fullName.trim()) {
-      return "Please enter your full name.";
-    }
-
     return null;
   };
-
-  // State for showing verification pending UI
-  const [verificationPending, setVerificationPending] = useState(false);
-  const [verificationEmail, setVerificationEmail] = useState("");
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
-    setMessage(null);
     setIsSubmitting(true);
 
-    // Client-side validation
+    // Normalize email: if user enters just username, append @prontx.com
+    let normalizedEmail = email.trim();
+    if (!normalizedEmail.includes("@")) {
+      normalizedEmail = normalizedEmail + "@prontx.com";
+    }
+
+    // Update the email state with normalized version
+    setEmail(normalizedEmail);
+
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
@@ -86,32 +85,14 @@ export const AuthPage: React.FC = () => {
     }
 
     try {
-      if (isLogin) {
-        const errorMsg = await signIn(email, password);
-        if (errorMsg) {
-          const friendlyError = getErrorMessage(errorMsg);
-          setError(friendlyError);
-          console.log("Sign in failed:", friendlyError);
-        } else {
-          // Successfully signed in
-          console.log("Sign in successful");
-        }
+      const errorMsg = await signIn(normalizedEmail, password);
+      if (errorMsg) {
+        const friendlyError = getErrorMessage(errorMsg);
+        setError(friendlyError);
+        console.log("Sign in failed:", friendlyError);
       } else {
-        const errorMsg = await signUp(email, password, fullName.trim());
-        if (errorMsg) {
-          const friendlyError = getErrorMessage(errorMsg);
-          setError(friendlyError);
-          console.log("Sign up failed:", friendlyError);
-        } else {
-          // Show verification pending UI
-          setVerificationEmail(email);
-          setVerificationPending(true);
-          // Clear form
-          setEmail("");
-          setPassword("");
-          setFullName("");
-          console.log("Sign up successful, verification pending");
-        }
+        console.log("Sign in successful");
+        navigate("/dashboard");
       }
     } catch (err) {
       const errorMessage =
@@ -123,82 +104,13 @@ export const AuthPage: React.FC = () => {
     }
   };
 
-  // Show verification pending UI
-  if (verificationPending) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
-        <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
-
-        <div className="max-w-md w-full glass rounded-3xl overflow-hidden relative z-10 border border-white/5">
-          <div className="p-8 sm:p-10 text-center">
-            {/* Email Icon */}
-            <div className="flex justify-center mb-6">
-              <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center">
-                <svg
-                  className="w-10 h-10 text-primary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-            </div>
-
-            <h2 className="text-2xl font-display font-bold text-white mb-3">
-              Check your email
-            </h2>
-
-            <p className="text-text-secondary mb-2">
-              We've sent a verification link to:
-            </p>
-            <p className="text-primary font-semibold mb-6">
-              {verificationEmail}
-            </p>
-
-            <p className="text-text-secondary text-sm mb-8">
-              Click the link in the email to verify your account. You can then
-              return here to sign in.
-            </p>
-
-            <button
-              onClick={() => {
-                setVerificationPending(false);
-                setIsLogin(true);
-              }}
-              className="w-full px-4 py-3 bg-primary text-white rounded-xl font-bold hover:brightness-110 transition-all"
-            >
-              Back to Sign In
-            </button>
-
-            <p className="text-text-secondary text-xs mt-6">
-              Didn't receive the email? Check your spam folder or{" "}
-              <button
-                onClick={() => setVerificationPending(false)}
-                className="text-primary hover:underline"
-              >
-                try signing up again
-              </button>
-            </p>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
       {/* Dynamic Background Elements */}
       <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse"></div>
       <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
 
-      <div className="max-w-md w-full glass rounded-3xl  overflow-hidden relative z-10 border border-white/5">
+      <div className="max-w-md w-full glass rounded-3xl overflow-hidden relative z-10 border border-white/5">
         <div className="p-8 sm:p-10">
           <div className="flex justify-center mb-8">
             <div className="w-24 h-24 relative flex items-center justify-center group">
@@ -215,56 +127,36 @@ export const AuthPage: React.FC = () => {
 
           <div className="text-center mb-8">
             <h2 className="text-3xl font-display font-bold text-white tracking-tight mb-2">
-              {isLogin ? "Welcome back" : "Create account"}
+              Welcome back
             </h2>
             <p className="text-text-secondary text-sm">
-              {isLogin
-                ? "Enter your credentials to access your workspace"
-                : "Join our community and start building today"}
+              Sign in with your @prontx.com account
             </p>
           </div>
 
-          {/* Error/Success Messages */}
+          {/* Error Message */}
           {error && (
             <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
               <p className="text-red-400 text-sm text-center">{error}</p>
             </div>
           )}
-          {message && (
-            <div className="mb-4 p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
-              <p className="text-green-400 text-sm text-center">{message}</p>
-            </div>
-          )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {!isLogin && (
-              <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-text-secondary ml-1">
-                  Full Name
-                </label>
-                <input
-                  type="text"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  required={!isLogin}
-                  className="w-full px-4 py-3 bg-surface/40 border border-white/10 text-text-main rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30"
-                  placeholder="John Doe"
-                />
-              </div>
-            )}
-
             <div className="space-y-1.5">
               <label className="text-xs font-bold uppercase tracking-wider text-text-secondary ml-1">
                 Email Address
               </label>
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 bg-surface/40 border border-white/10 text-text-main rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30"
-                placeholder="name@company.com"
+                placeholder="john.doe (or john.doe@prontx.com)"
               />
+              <p className="text-xs text-text-secondary/60 ml-1">
+                @prontx.com will be added automatically
+              </p>
             </div>
 
             <div className="space-y-1.5">
@@ -310,30 +202,23 @@ export const AuthPage: React.FC = () => {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     ></path>
                   </svg>
-                  <span>Authenticating...</span>
+                  <span>Signing In...</span>
                 </>
               ) : (
-                <span>{isLogin ? "Sign In" : "Get Started"}</span>
+                <span>Sign In</span>
               )}
             </button>
           </form>
 
           <div className="mt-8 text-center">
             <p className="text-sm text-text-secondary">
-              {isLogin ? "New here? " : "Already a member? "}
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError(null);
-                  setMessage(null);
-                  setEmail("");
-                  setPassword("");
-                  setFullName("");
-                }}
+              New here?{" "}
+              <Link
+                to="/signup"
                 className="font-bold text-primary hover:text-white underline-offset-4 hover:underline transition-all"
               >
-                {isLogin ? "Create an account" : "Sign in to your account"}
-              </button>
+                Create an account
+              </Link>
             </p>
           </div>
         </div>
