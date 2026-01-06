@@ -266,7 +266,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onS
             </button>
             <button 
               type="submit"
-              className="btn-primary"
+                className="hidden sm:flex items-center gap-2 px-4 py-2 bg-primary text-white border border-border rounded-lg text-sm font-semibold hover:bg-primary-hover hover:border-white/20 transition-all"
             >
               {isEditMode ? 'Update Project' : 'Save Project'}
             </button>
