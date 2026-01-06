@@ -5,15 +5,19 @@ import React, {
   useEffect,
   ReactNode,
   useCallback,
-} from 'react';
-import type { User } from '@supabase/supabase-js';
-import * as authService from '../services/authService';
+} from "react";
+import type { User } from "@supabase/supabase-js";
+import * as authService from "../services/authService";
 
 interface AuthContextType {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  signUp: (email: string, password: string, fullName: string) => Promise<string | null>;
+  signUp: (
+    email: string,
+    password: string,
+    fullName: string
+  ) => Promise<string | null>;
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<string | null>;
@@ -24,7 +28,7 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider');
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };
@@ -43,17 +47,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const session = await authService.getSession();
         const user = session?.user ?? null;
-        
+
         // Only set authenticated if email is confirmed
         if (user && !user.email_confirmed_at) {
-          console.log('User email not verified, signing out');
+          console.log("User email not verified, signing out");
           await authService.signOut();
           setUser(null);
         } else {
           setUser(user);
         }
       } catch (error) {
-        console.error('Error initializing auth:', error);
+        console.error("Error initializing auth:", error);
         setUser(null);
       } finally {
         setIsLoading(false);
@@ -66,7 +70,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const subscription = authService.onAuthStateChange(async (user) => {
       // Only set authenticated if email is confirmed
       if (user && !user.email_confirmed_at) {
-        console.log('Auth state changed but email not verified');
+        console.log("Auth state changed but email not verified");
         await authService.signOut();
         setUser(null);
       } else {
@@ -81,18 +85,28 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const signUp = useCallback(
-    async (email: string, password: string, fullName: string): Promise<string | null> => {
+    async (
+      email: string,
+      password: string,
+      fullName: string
+    ): Promise<string | null> => {
       setIsLoading(true);
       try {
         const { error } = await authService.signUp(email, password, fullName);
         if (error) {
-          return error.message;
+          console.error("Sign up error:", error);
+          return error.message || "Failed to create account. Please try again.";
         }
         // Don't set user - they need to verify email first
         // Return null indicates success, AuthPage will show verification message
         return null;
       } catch (error) {
-        return 'An unexpected error occurred';
+        console.error("Unexpected sign up error:", error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred";
+        return errorMessage;
       } finally {
         setIsLoading(false);
       }
@@ -106,28 +120,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const { user, error } = await authService.signIn(email, password);
         if (error) {
-          return error.message;
+          console.error("Sign in error:", error);
+          return (
+            error.message || "Failed to sign in. Please check your credentials."
+          );
         }
-        
+
         // Check if email is confirmed
         if (user && !user.email_confirmed_at) {
           // Sign out the unverified user
           await authService.signOut();
-          return 'Please verify your email before signing in. Check your inbox for the confirmation link.';
+          return "Please verify your email before signing in. Check your inbox for the confirmation link.";
         }
-        
+
         setUser(user);
         return null;
       } catch (error) {
-        return 'An unexpected error occurred';
+        console.error("Unexpected sign in error:", error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred";
+        return errorMessage;
       } finally {
         setIsLoading(false);
       }
     },
     []
   );
-
-
 
   const signOutFn = useCallback(async (): Promise<void> => {
     await authService.signOut();
@@ -139,11 +159,19 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       try {
         const { error } = await authService.resetPassword(email);
         if (error) {
-          return error.message;
+          console.error("Reset password error:", error);
+          return (
+            error.message || "Failed to send reset email. Please try again."
+          );
         }
         return null;
       } catch (error) {
-        return 'An unexpected error occurred';
+        console.error("Unexpected reset password error:", error);
+        const errorMessage =
+          error instanceof Error
+            ? error.message
+            : "An unexpected error occurred";
+        return errorMessage;
       }
     },
     []

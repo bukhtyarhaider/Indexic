@@ -1,8 +1,8 @@
-import React from 'react';
-import { AuthPage } from './components/AuthPage';
-import { Dashboard } from './pages/Dashboard';
-import { useAuth } from './context/AuthContext';
-import { useToast } from './context/ToastContext';
+import React from "react";
+import { AuthPage } from "./components/AuthPage";
+import { Dashboard } from "./pages/Dashboard";
+import { useAuth } from "./context/AuthContext";
+import { useToast } from "./context/ToastContext";
 
 // Loading spinner component
 const LoadingScreen: React.FC = () => (
@@ -15,12 +15,17 @@ const LoadingScreen: React.FC = () => (
 );
 
 const App: React.FC = () => {
-  const { isAuthenticated, isLoading, signOut } = useAuth();
-  const { showToast } = useToast();
+  const { isAuthenticated, isLoading, signOut, user } = useAuth();
+  const { showSuccess, showError } = useToast();
 
   const handleLogout = async () => {
-    await signOut();
-    showToast('Logged out successfully');
+    try {
+      await signOut();
+      showSuccess("Logged out successfully");
+    } catch (error) {
+      console.error("Logout error:", error);
+      showError("Failed to log out. Please try again.");
+    }
   };
 
   // Show loading screen while checking auth
@@ -28,15 +33,13 @@ const App: React.FC = () => {
     return <LoadingScreen />;
   }
 
-  if (!isAuthenticated) {
+  // Show auth page if not authenticated
+  if (!isAuthenticated || !user) {
     return <AuthPage />;
   }
 
-  return (
-    <>
-      <Dashboard onLogout={handleLogout} />
-    </>
-  );
+  // Show dashboard for authenticated users
+  return <Dashboard onLogout={handleLogout} />;
 };
 
 export default App;
