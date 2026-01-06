@@ -46,22 +46,22 @@ export const SignUp: React.FC = () => {
   };
 
   // Client-side validation
-  const validateForm = (): string | null => {
+  const validateForm = (emailToValidate: string): string | null => {
     if (!fullName.trim()) {
       return "Please enter your full name.";
     }
 
-    if (!email.trim()) {
+    if (!emailToValidate.trim()) {
       return "Please enter your email address.";
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(emailToValidate)) {
       return "Please enter a valid email address.";
     }
 
     // Check if email domain is @prontx.com
-    if (!email.toLowerCase().endsWith("@prontx.com")) {
+    if (!emailToValidate.toLowerCase().endsWith("@prontx.com")) {
       return "Only @prontx.com email addresses are allowed to sign up.";
     }
 
@@ -90,15 +90,16 @@ export const SignUp: React.FC = () => {
       normalizedEmail = normalizedEmail;
     }
 
-    // Update the email state with normalized version
-    setEmail(normalizedEmail);
-
-    const validationError = validateForm();
+    // Validate using the normalized email directly
+    const validationError = validateForm(normalizedEmail);
     if (validationError) {
       setError(validationError);
       setIsSubmitting(false);
       return;
     }
+
+    // Update the email state with normalized version
+    setEmail(normalizedEmail);
 
     try {
       const errorMsg = await signUp(normalizedEmail, password, fullName.trim());

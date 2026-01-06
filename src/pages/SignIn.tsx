@@ -42,13 +42,13 @@ export const SignIn: React.FC = () => {
   };
 
   // Client-side validation
-  const validateForm = (): string | null => {
-    if (!email.trim()) {
+  const validateForm = (emailToValidate: string): string | null => {
+    if (!emailToValidate.trim()) {
       return "Please enter your email address.";
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
+    if (!emailRegex.test(emailToValidate)) {
       return "Please enter a valid email address.";
     }
 
@@ -74,15 +74,16 @@ export const SignIn: React.FC = () => {
       normalizedEmail = normalizedEmail + "@prontx.com";
     }
 
-    // Update the email state with normalized version
-    setEmail(normalizedEmail);
-
-    const validationError = validateForm();
+    // Validate using the normalized email directly
+    const validationError = validateForm(normalizedEmail);
     if (validationError) {
       setError(validationError);
       setIsSubmitting(false);
       return;
     }
+
+    // Update the email state with normalized version
+    setEmail(normalizedEmail);
 
     try {
       const errorMsg = await signIn(normalizedEmail, password);
