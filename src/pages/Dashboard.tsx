@@ -9,6 +9,7 @@ import { GithubImportModal } from '../components/GithubImportModal';
 import { useProjects } from '../hooks/useProjects';
 import { useFilters } from '../hooks/useFilters';
 import { useToast } from '../context/ToastContext';
+import { useAuth } from '../context/AuthContext';
 
 import logo from '../assets/logo.png';
 
@@ -19,9 +20,11 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
+  const { user } = useAuth();
   const { 
-    projects, setProjects, addProject, updateProject, deleteProject, 
-    importJSON, importGithub, exportJSON, fileInputRef 
+    projects, addProject, updateProject, deleteProject, 
+    importJSON, importGithub, exportJSON, fileInputRef,
+    isLoading, error, clearError
   } = useProjects();
   
   const { filters, setFilters, filteredProjects, allTags } = useFilters(projects);
@@ -285,8 +288,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       {/* Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         
-        {/* EMPTY STATE - No projects at all */}
-        {projects.length === 0 ? (
+        {/* Error State */}
+        {error && (
+          <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-xl flex items-center justify-between">
+            <p className="text-red-400 text-sm">{error}</p>
+            <button onClick={clearError} className="text-red-400 hover:text-red-300">
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+          </div>
+        )}
+
+        {/* LOADING STATE */}
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center py-20">
+            <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
+            <p className="text-text-secondary">Loading projects...</p>
+          </div>
+        ) : projects.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-20 px-4">
              <div className="w-24 h-24 bg-surface rounded-full flex items-center justify-center mb-6 shadow-inner border border-border">
                 <svg className="w-10 h-10 text-text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" /></svg>
