@@ -60,6 +60,11 @@ export const SignUp: React.FC = () => {
       return "Please enter a valid email address.";
     }
 
+    // Check if email domain is @prontx.com
+    if (!email.toLowerCase().endsWith("@prontx.com")) {
+      return "Only @prontx.com email addresses are allowed to sign up.";
+    }
+
     if (!password) {
       return "Please enter your password.";
     }
@@ -76,6 +81,18 @@ export const SignUp: React.FC = () => {
     setError(null);
     setIsSubmitting(true);
 
+    // Normalize email: if user enters just username, append @prontx.com
+    let normalizedEmail = email.trim();
+    if (!normalizedEmail.includes("@")) {
+      normalizedEmail = normalizedEmail + "@prontx.com";
+    } else if (!normalizedEmail.toLowerCase().endsWith("@prontx.com")) {
+      // If user typed @ but wrong domain, we'll catch it in validation
+      normalizedEmail = normalizedEmail;
+    }
+
+    // Update the email state with normalized version
+    setEmail(normalizedEmail);
+
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
@@ -84,13 +101,13 @@ export const SignUp: React.FC = () => {
     }
 
     try {
-      const errorMsg = await signUp(email, password, fullName.trim());
+      const errorMsg = await signUp(normalizedEmail, password, fullName.trim());
       if (errorMsg) {
         const friendlyError = getErrorMessage(errorMsg);
         setError(friendlyError);
         console.log("Sign up failed:", friendlyError);
       } else {
-        setVerificationEmail(email);
+        setVerificationEmail(normalizedEmail);
         setVerificationPending(true);
         setEmail("");
         setPassword("");
@@ -199,7 +216,7 @@ export const SignUp: React.FC = () => {
               Create account
             </h2>
             <p className="text-text-secondary text-sm">
-              Join our community and start building today
+              Join our community with your @prontx.com email
             </p>
           </div>
 
@@ -230,13 +247,16 @@ export const SignUp: React.FC = () => {
                 Email Address
               </label>
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 bg-surface/40 border border-white/10 text-text-main rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30"
-                placeholder="name@company.com"
+                placeholder="john.doe (or john.doe@prontx.com)"
               />
+              <p className="text-xs text-text-secondary/60 ml-1">
+                @prontx.com will be added automatically
+              </p>
             </div>
 
             <div className="space-y-1.5">

@@ -68,6 +68,15 @@ export const SignIn: React.FC = () => {
     setError(null);
     setIsSubmitting(true);
 
+    // Normalize email: if user enters just username, append @prontx.com
+    let normalizedEmail = email.trim();
+    if (!normalizedEmail.includes("@")) {
+      normalizedEmail = normalizedEmail + "@prontx.com";
+    }
+
+    // Update the email state with normalized version
+    setEmail(normalizedEmail);
+
     const validationError = validateForm();
     if (validationError) {
       setError(validationError);
@@ -76,7 +85,7 @@ export const SignIn: React.FC = () => {
     }
 
     try {
-      const errorMsg = await signIn(email, password);
+      const errorMsg = await signIn(normalizedEmail, password);
       if (errorMsg) {
         const friendlyError = getErrorMessage(errorMsg);
         setError(friendlyError);
@@ -121,7 +130,7 @@ export const SignIn: React.FC = () => {
               Welcome back
             </h2>
             <p className="text-text-secondary text-sm">
-              Enter your credentials to access your workspace
+              Sign in with your @prontx.com account
             </p>
           </div>
 
@@ -138,13 +147,16 @@ export const SignIn: React.FC = () => {
                 Email Address
               </label>
               <input
-                type="email"
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 className="w-full px-4 py-3 bg-surface/40 border border-white/10 text-text-main rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30"
-                placeholder="name@company.com"
+                placeholder="john.doe (or john.doe@prontx.com)"
               />
+              <p className="text-xs text-text-secondary/60 ml-1">
+                @prontx.com will be added automatically
+              </p>
             </div>
 
             <div className="space-y-1.5">
