@@ -1,21 +1,19 @@
 import React from "react";
-import { AuthPage } from "./components/AuthPage";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+import { SignIn } from "./pages/SignIn";
+import { SignUp } from "./pages/SignUp";
 import { Dashboard } from "./pages/Dashboard";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 import { useAuth } from "./context/AuthContext";
 import { useToast } from "./context/ToastContext";
 
-// Loading spinner component
-const LoadingScreen: React.FC = () => (
-  <div className="min-h-screen flex items-center justify-center bg-background">
-    <div className="flex flex-col items-center gap-4">
-      <div className="w-12 h-12 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
-      <p className="text-text-secondary text-sm">Loading...</p>
-    </div>
-  </div>
-);
-
 const App: React.FC = () => {
-  const { isAuthenticated, isLoading, signOut, user } = useAuth();
+  const { signOut } = useAuth();
   const { showSuccess, showError } = useToast();
 
   const handleLogout = async () => {
@@ -28,18 +26,31 @@ const App: React.FC = () => {
     }
   };
 
-  // Show loading screen while checking auth
-  if (isLoading) {
-    return <LoadingScreen />;
-  }
+  return (
+    <Router>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/signin" element={<SignIn />} />
+        <Route path="/signup" element={<SignUp />} />
 
-  // Show auth page if not authenticated
-  if (!isAuthenticated || !user) {
-    return <AuthPage />;
-  }
+        {/* Protected Routes */}
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <Dashboard onLogout={handleLogout} />
+            </ProtectedRoute>
+          }
+        />
 
-  // Show dashboard for authenticated users
-  return <Dashboard onLogout={handleLogout} />;
+        {/* Default Route */}
+        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+
+        {/* Catch all - redirect to dashboard */}
+        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      </Routes>
+    </Router>
+  );
 };
 
 export default App;
