@@ -122,6 +122,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
     const savedProject: Project = {
       id: initialData?.id || Date.now().toString(),
+      userId: initialData?.userId || "", // Will be set by the service layer
       name: formData.name,
       description: formData.description || "",
       category: formData.category,

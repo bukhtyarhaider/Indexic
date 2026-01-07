@@ -274,8 +274,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
       // Update the record with new recommendations
       updateMatchRecord(recordId, {
         requirements: newRequirements,
-        selectedProjectIds: result.selectedIds,
-        reasoning: result.reasoning,
+        recommendations: result.recommendations,
+        selectedProjectIds: result.recommendations.map((r) => r.projectId),
         proposal: undefined, // Clear proposal since requirements changed
       });
 
