@@ -1,20 +1,20 @@
 export enum ProjectCategory {
-  UXUI = 'UX/UI Design',
-  DEVELOPMENT = 'Development',
-  WORDPRESS = 'WordPress',
-  MOBILE = 'Mobile App',
-  BRANDING = 'Branding',
-  RESEARCH = 'Research',
-  OTHER = 'Other'
+  UXUI = "UX/UI Design",
+  DEVELOPMENT = "Development",
+  WORDPRESS = "WordPress",
+  MOBILE = "Mobile App",
+  BRANDING = "Branding",
+  RESEARCH = "Research",
+  OTHER = "Other",
 }
 
 export enum LinkType {
-  FIGMA = 'Figma',
-  GITHUB = 'GitHub',
-  LIVE = 'Live Site',
-  DRIVE = 'Google Drive',
-  DOC = 'Documentation',
-  OTHER = 'Other'
+  FIGMA = "Figma",
+  GITHUB = "GitHub",
+  LIVE = "Live Site",
+  DRIVE = "Google Drive",
+  DOC = "Documentation",
+  OTHER = "Other",
 }
 
 export interface ProjectLink {
@@ -26,6 +26,7 @@ export interface ProjectLink {
 
 export interface Project {
   id: string;
+  userId: string;
   name: string;
   description: string;
   category: ProjectCategory | string;
@@ -38,8 +39,8 @@ export interface Project {
 
 export interface FilterState {
   search: string;
-  category: ProjectCategory | 'All';
-  tag: string | 'All';
+  category: ProjectCategory | "All";
+  tag: string | "All";
 }
 
 // Auth types

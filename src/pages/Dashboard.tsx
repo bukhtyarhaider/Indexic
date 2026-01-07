@@ -549,6 +549,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     onCopy={handleCopySingle}
                     onEdit={handleEditClick}
                     onDelete={handleDeleteClick}
+                    currentUserId={user?.id}
                   />
                 ))}
               </div>
@@ -560,6 +561,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 onCopy={handleCopySingle}
                 onEdit={handleEditClick}
                 onDelete={handleDeleteClick}
+                currentUserId={user?.id}
               />
             )}
 
