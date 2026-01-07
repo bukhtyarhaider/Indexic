@@ -135,7 +135,10 @@ export const MatchHistoryModal: React.FC<MatchHistoryModalProps> = ({
         await onGenerateProposal(updatedRecord);
       } catch (error) {
         console.error("Error generating proposal:", error);
-        const errorMsg = error instanceof Error ? error.message : "Failed to generate proposal. Please try again.";
+        const errorMsg =
+          error instanceof Error
+            ? error.message
+            : "Failed to generate proposal. Please try again.";
         showError(errorMsg);
       } finally {
         setIsGenerating(false);
@@ -163,7 +166,10 @@ export const MatchHistoryModal: React.FC<MatchHistoryModalProps> = ({
         setShowEditRequirements(false);
       } catch (error) {
         console.error("Error re-analyzing:", error);
-        const errorMsg = error instanceof Error ? error.message : "Failed to re-analyze. Please try again.";
+        const errorMsg =
+          error instanceof Error
+            ? error.message
+            : "Failed to re-analyze. Please try again.";
         showError(errorMsg);
       } finally {
         setIsReanalyzing(false);

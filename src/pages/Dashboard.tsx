@@ -257,7 +257,9 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     } catch (error) {
       console.error("Error generating proposal:", error);
       const errorMessage =
-        error instanceof Error ? error.message : "Failed to generate proposal. Please try again.";
+        error instanceof Error
+          ? error.message
+          : "Failed to generate proposal. Please try again.";
       showError(errorMessage);
     }
   };

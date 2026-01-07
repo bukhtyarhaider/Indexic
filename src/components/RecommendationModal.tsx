@@ -107,7 +107,10 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
       setCurrentMatchId(matchId);
     } catch (error) {
       console.error("Analysis error:", error);
-      const errorMsg = error instanceof Error ? error.message : "An error occurred while analyzing. Please try again.";
+      const errorMsg =
+        error instanceof Error
+          ? error.message
+          : "An error occurred while analyzing. Please try again.";
       showError(errorMsg);
       setHasSearched(false);
     } finally {
