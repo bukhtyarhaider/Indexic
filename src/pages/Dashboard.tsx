@@ -16,7 +16,11 @@ import { RecommendationModal } from "@/components/RecommendationModal";
 import { MatchHistoryModal } from "@/components/MatchHistoryModal";
 import { RecommendationResult, MatchRecord } from "@/types/match";
 import { useMatchHistory } from "@/hooks/useMatchHistory";
-import { createMatchRecord, generateProposal } from "@/services/matchService";
+import {
+  createMatchRecord,
+  generateProposal,
+  getProjectRecommendations,
+} from "@/services/matchService";
 
 type ViewMode = "grid" | "table";
 
@@ -138,7 +142,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     clientName?: string,
     proposal?: string,
     senderType: "agency" | "individual" = "agency"
-  ) => {
+  ): string => {
     const record = createMatchRecord(
       requirements,
       recommendations,
@@ -149,6 +153,35 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     );
     addMatchRecord(record);
     showSuccess("Match saved to history.");
+    return record.id; // Return the ID so it can be updated later
+  };
+
+  const handleUpdateMatch = (
+    matchId: string,
+    updates: { proposal?: string; clientName?: string }
+  ) => {
+    updateMatchRecord(matchId, updates);
+    showSuccess("Match updated successfully.");
+  };
+
+  const handleApplyMatch = (projectIds: string[]) => {
+    const newSelected = new Set(projectIds);
+    setSelectedIds(newSelected);
+    showSuccess(`Selected ${projectIds.length} projects from match history.`);
+  };
+
+  const handleRemoveProject = (recordId: string, projectId: string) => {
+    const record = matchHistory.find((r) => r.id === recordId);
+    if (record) {
+      const updatedProjectIds = record.selectedProjectIds.filter(
+        (id) => id !== projectId
+      );
+      updateMatchRecord(recordId, {
+        selectedProjectIds: updatedProjectIds,
+        proposal: undefined, // Clear proposal since project list changed
+      });
+      showSuccess("Project removed from match.");
+    }
   };
 
   const handleDeleteMatch = (recordId: string) => {
@@ -157,26 +190,65 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   };
 
   const handleGenerateProposal = async (record: MatchRecord) => {
+    // Client name and sender type are now set in the modal's Proposal tab
+    const clientName = record.clientName?.trim();
+    const senderType = record.senderType || "agency";
+
+    // Client name is optional but recommended for personalized proposals
+    if (!clientName) {
+      const proceed = window.confirm(
+        "No client name provided. The proposal will be generic. Continue anyway?"
+      );
+      if (!proceed) return;
+    }
+
     try {
       const selectedProjects = projects.filter((p) =>
         record.selectedProjectIds.includes(p.id)
       );
 
       if (selectedProjects.length === 0) {
-        showError("No projects found for this match.");
+        showError(
+          "No projects selected for this match. Please select projects in the AI Recommendations tab."
+        );
         return;
       }
 
       const proposalText = await generateProposal(
         record.requirements,
         selectedProjects,
-        record.clientName || "",
-        record.senderType,
+        clientName || "Client",
+        senderType,
         "Bukhtyar Haider" // You might want to make this configurable
       );
 
+      // Check if the response is an error message (not a valid proposal)
+      const errorIndicators = [
+        "unable to",
+        "failed to",
+        "error",
+        "temporarily busy",
+        "try again",
+        "please wait",
+        "configuration error",
+      ];
+      const isError = errorIndicators.some((indicator) =>
+        proposalText.toLowerCase().includes(indicator)
+      );
+
+      if (isError || proposalText.length < 100) {
+        // Too short to be a real proposal or contains error text
+        showError(proposalText);
+        return;
+      }
+
       // Update the record with the new proposal
-      updateMatchRecord(record.id, { proposal: proposalText });
+      updateMatchRecord(record.id, {
+        proposal: proposalText,
+        clientName: clientName || undefined,
+        senderType: senderType,
+        selectedProjectIds: record.selectedProjectIds,
+      });
       showSuccess(
         record.proposal
           ? "Proposal regenerated successfully!"
@@ -185,6 +257,31 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     } catch (error) {
       console.error("Error generating proposal:", error);
       showError("Failed to generate proposal. Please try again.");
+    }
+  };
+
+  const handleReanalyzeMatch = async (
+    recordId: string,
+    newRequirements: string
+  ) => {
+    try {
+      const result = await getProjectRecommendations(newRequirements, projects);
+
+      // Update the record with new recommendations
+      updateMatchRecord(recordId, {
+        requirements: newRequirements,
+        selectedProjectIds: result.selectedIds,
+        reasoning: result.reasoning,
+        proposal: undefined, // Clear proposal since requirements changed
+      });
+
+      showSuccess("Requirements re-analyzed successfully!");
+    } catch (error) {
+      console.error("Error re-analyzing match:", error);
+      const errorMessage =
+        error instanceof Error ? error.message : "Failed to re-analyze match";
+      showError(errorMessage);
+      throw error; // Re-throw so the modal knows it failed
     }
   };
 
@@ -804,6 +901,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         projects={projects}
         onSelectProjects={handleRecommendationSelect}
         onSaveMatch={handleSaveMatch}
+        onUpdateMatch={handleUpdateMatch}
       />
 
       <MatchHistoryModal
@@ -815,6 +913,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         onSelectRecord={setSelectedRecordId}
         onDeleteRecord={handleDeleteMatch}
         onGenerateProposal={handleGenerateProposal}
+        onApplyMatch={handleApplyMatch}
+        onRemoveProject={handleRemoveProject}
+        onUpdateRecord={updateMatchRecord}
+        onReanalyzeMatch={handleReanalyzeMatch}
       />
 
       <ConfirmationModal

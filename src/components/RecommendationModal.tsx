@@ -21,6 +21,10 @@ interface RecommendationModalProps {
     clientName?: string,
     proposal?: string,
     senderType?: "agency" | "individual"
+  ) => string; // Returns the match record ID
+  onUpdateMatch: (
+    matchId: string,
+    updates: { proposal?: string; clientName?: string }
   ) => void;
 }
 
@@ -32,8 +36,10 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   projects,
   onSelectProjects,
   onSaveMatch,
+  onUpdateMatch,
 }) => {
   const [step, setStep] = useState<ModalStep>("search");
+  const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
 
   // Search State
   const [requirements, setRequirements] = useState("");
@@ -56,18 +62,6 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   const [proposal, setProposal] = useState<string | null>(null);
   const [generatingProposal, setGeneratingProposal] = useState(false);
 
-  // Helper to save current state to history
-  const saveToHistory = (generatedProposal?: string) => {
-    onSaveMatch(
-      requirements,
-      results,
-      Array.from(selectedResultIds),
-      clientName || undefined,
-      generatedProposal || proposal || undefined,
-      senderType
-    );
-  };
-
   const handleAnalyze = async () => {
     const validation = validateMatchRequirements(requirements);
     if (!validation.isValid) {
@@ -85,13 +79,34 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
         requirements,
         projects
       );
+
+      // Only proceed if we got successful recommendations
+      if (recommendations.length === 0) {
+        setMessage(message || "No recommendations found.");
+        setHasSearched(false);
+        return;
+      }
+
       setResults(recommendations);
       setMessage(message);
       // Auto-select all recommendations by default
       setSelectedResultIds(new Set(recommendations.map((r) => r.projectId)));
       setHasSearched(true);
+
+      // Save match to history immediately after successful analysis
+      const matchId = onSaveMatch(
+        requirements,
+        recommendations,
+        recommendations.map((r) => r.projectId),
+        undefined, // No client name yet
+        undefined, // No proposal yet
+        senderType
+      );
+      setCurrentMatchId(matchId);
     } catch (error) {
+      console.error("Analysis error:", error);
       setMessage("An error occurred while analyzing. Please try again.");
+      setHasSearched(false);
     } finally {
       setLoading(false);
     }
@@ -102,6 +117,12 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   };
 
   const handleGenerateProposal = async () => {
+    // Require client name for proposal generation
+    if (!clientName.trim()) {
+      setMessage("Client name is required to generate a proposal.");
+      return;
+    }
+
     const validation = validateProposalConfig(
       Array.from(selectedResultIds),
       senderName,
@@ -121,17 +142,26 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
       const text = await generateProposal(
         requirements,
         selectedProjects,
-        clientName,
+        clientName.trim(),
         senderType,
         senderName
       );
       setProposal(text);
       setStep("proposal");
-      // Auto-save when proposal is generated
-      saveToHistory(text);
+
+      // Update existing match record with proposal and client name
+      if (currentMatchId) {
+        onUpdateMatch(currentMatchId, {
+          proposal: text,
+          clientName: clientName.trim(),
+        });
+      }
     } catch (e) {
-      setMessage("Failed to generate proposal.");
-      setStep("search"); // Go back on error
+      console.error("Proposal generation error:", e);
+      const errorMsg =
+        e instanceof Error ? e.message : "Failed to generate proposal.";
+      setMessage(errorMsg);
+      // Don't change step, stay on config so user can retry
     } finally {
       setGeneratingProposal(false);
     }
@@ -151,10 +181,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   };
 
   const handleApply = () => {
-    // If we have search results but no proposal was generated yet, save this as a search record
-    if (hasSearched && !proposal) {
-      saveToHistory();
-    }
+    // Match already saved during analysis
     onSelectProjects(Array.from(selectedResultIds));
     handleClose();
   };
@@ -170,6 +197,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
     setClientName("");
     setSenderType("agency");
     setSenderName("Bukhtyar Haider");
+    setCurrentMatchId(null);
     onClose();
   };
 
@@ -258,9 +286,9 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
           <div className="p-6 space-y-6">
             <div>
               <label className="block text-sm font-semibold text-textMain mb-2">
-                Client Name{" "}
-                <span className="text-textSecondary font-normal">
-                  (Who are we writing to?)
+                Client Name <span className="text-red-400 font-normal">*</span>
+                <span className="text-textSecondary font-normal text-xs ml-1">
+                  (Required for proposal generation)
                 </span>
               </label>
               <input

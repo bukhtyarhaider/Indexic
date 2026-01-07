@@ -102,11 +102,11 @@ export const generateProposal = async (
   } catch (error) {
     console.error("Proposal Generation Error:", error);
 
-    // Return more specific error message
+    // Return user-friendly error message (the geminiClient already sanitizes the error)
     if (error instanceof Error) {
-      return `Error generating proposal: ${error.message}`;
+      return error.message;
     }
-    return "An error occurred while generating the proposal. Please check your API key and try again.";
+    return "Unable to generate proposal. Please try again in a moment.";
   }
 };
 
