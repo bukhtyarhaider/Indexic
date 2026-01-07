@@ -12,6 +12,11 @@ import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
 
 import logo from "../assets/logo.png";
+import { RecommendationModal } from "@/components/RecommendationModal";
+import { MatchHistoryModal } from "@/components/MatchHistoryModal";
+import { RecommendationResult, MatchRecord } from "@/types/match";
+import { useMatchHistory } from "@/hooks/useMatchHistory";
+import { createMatchRecord, generateProposal } from "@/services/matchService";
 
 type ViewMode = "grid" | "table";
 
@@ -44,11 +49,24 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
   const [viewMode, setViewMode] = useState<ViewMode>("grid");
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  // Match History Hook
+  const {
+    history: matchHistory,
+    selectedRecordId,
+    setSelectedRecordId,
+    addRecord: addMatchRecord,
+    deleteRecord: deleteMatchRecord,
+    updateRecord: updateMatchRecord,
+  } = useMatchHistory();
+
   // Modals state
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isGithubModalOpen, setIsGithubModalOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
   const [deletingProject, setDeletingProject] = useState<Project | null>(null);
+  const [isRecommendationModalOpen, setIsRecommendationModalOpen] =
+    useState(false);
+  const [isHistoryModalOpen, setIsHistoryModalOpen] = useState(false);
 
   // Handlers
   const handleToggleSelect = (id: string) => {
@@ -104,6 +122,70 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
     }
     setIsModalOpen(false);
     setEditingProject(null);
+  };
+
+  const handleRecommendationSelect = (projectIds: string[]) => {
+    const newSelected = new Set(selectedIds);
+    projectIds.forEach((id) => newSelected.add(id));
+    setSelectedIds(newSelected);
+    showSuccess(`Selected ${projectIds.length} recommended projects.`);
+  };
+
+  const handleSaveMatch = (
+    requirements: string,
+    recommendations: RecommendationResult[],
+    selectedProjectIds: string[],
+    clientName?: string,
+    proposal?: string,
+    senderType: "agency" | "individual" = "agency"
+  ) => {
+    const record = createMatchRecord(
+      requirements,
+      recommendations,
+      selectedProjectIds,
+      clientName,
+      proposal,
+      senderType
+    );
+    addMatchRecord(record);
+    showSuccess("Match saved to history.");
+  };
+
+  const handleDeleteMatch = (recordId: string) => {
+    deleteMatchRecord(recordId);
+    showSuccess("Match deleted from history.");
+  };
+
+  const handleGenerateProposal = async (record: MatchRecord) => {
+    try {
+      const selectedProjects = projects.filter((p) =>
+        record.selectedProjectIds.includes(p.id)
+      );
+
+      if (selectedProjects.length === 0) {
+        showError("No projects found for this match.");
+        return;
+      }
+
+      const proposalText = await generateProposal(
+        record.requirements,
+        selectedProjects,
+        record.clientName || "",
+        record.senderType,
+        "Bukhtyar Haider" // You might want to make this configurable
+      );
+
+      // Update the record with the new proposal
+      updateMatchRecord(record.id, { proposal: proposalText });
+      showSuccess(
+        record.proposal
+          ? "Proposal regenerated successfully!"
+          : "Proposal generated successfully!"
+      );
+    } catch (error) {
+      console.error("Error generating proposal:", error);
+      showError("Failed to generate proposal. Please try again.");
+    }
   };
 
   const handleGithubImport = (newProjects: Project[]) => {
@@ -382,6 +464,51 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   </option>
                 ))}
               </select>
+            </div>
+
+            <div className="w-px bg-border my-1 mx-1 hidden md:block"></div>
+
+            <div className="flex gap-2">
+              <button
+                onClick={() => setIsHistoryModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-surface text-textSecondary border border-border rounded-xl text-sm font-semibold hover:text-white hover:bg-surfaceHighlight transition-all"
+                title="View History"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+              </button>
+
+              {/* AI Match Button */}
+              <button
+                onClick={() => setIsRecommendationModalOpen(true)}
+                className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primaryGradientStart to-primaryGradientEnd text-white rounded-xl text-sm font-semibold hover:brightness-110 transition-all shadow-glow active:scale-95 whitespace-nowrap"
+              >
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                  />
+                </svg>
+                AI Match
+              </button>
             </div>
 
             <div className="w-px bg-border my-1 mx-1 hidden md:block"></div>
@@ -669,6 +796,25 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         isOpen={isGithubModalOpen}
         onClose={() => setIsGithubModalOpen(false)}
         onImport={handleGithubImport}
+      />
+
+      <RecommendationModal
+        isOpen={isRecommendationModalOpen}
+        onClose={() => setIsRecommendationModalOpen(false)}
+        projects={projects}
+        onSelectProjects={handleRecommendationSelect}
+        onSaveMatch={handleSaveMatch}
+      />
+
+      <MatchHistoryModal
+        isOpen={isHistoryModalOpen}
+        onClose={() => setIsHistoryModalOpen(false)}
+        history={matchHistory}
+        projects={projects}
+        selectedRecordId={selectedRecordId}
+        onSelectRecord={setSelectedRecordId}
+        onDeleteRecord={handleDeleteMatch}
+        onGenerateProposal={handleGenerateProposal}
       />
 
       <ConfirmationModal
