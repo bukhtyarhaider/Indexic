@@ -108,50 +108,50 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   };
 
   return (
-    <div className="bg-surface rounded-xl border border-border overflow-hidden shadow-soft">
-      <div className="overflow-x-auto max-h-[70vh]">
+    <div className="bg-surface rounded-lg sm:rounded-xl border border-border overflow-hidden shadow-soft">
+      <div className="overflow-x-auto max-h-[60vh] sm:max-h-[70vh] -mx-px">
         <table className="min-w-full divide-y divide-border relative">
           <thead className="bg-surface-highlight sticky top-0 z-10">
             <tr>
               <th
                 scope="col"
-                className="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider w-10 bg-surface-highlight border-b border-border"
+                className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-text-secondary uppercase tracking-wider w-8 sm:w-10 bg-surface-highlight border-b border-border"
               >
                 <span className="sr-only">Select</span>
               </th>
               <th
                 scope="col"
-                className="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
+                className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border min-w-[150px] sm:min-w-[200px]"
               >
                 Project
               </th>
               <th
                 scope="col"
-                className="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
+                className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border min-w-[80px] sm:min-w-[100px]"
               >
                 Category
               </th>
               <th
                 scope="col"
-                className="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
+                className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
               >
                 Owner
               </th>
               <th
                 scope="col"
-                className="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
+                className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
               >
                 Stack / Tags
               </th>
               <th
                 scope="col"
-                className="px-6 py-4 text-left text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
+                className="px-3 sm:px-6 py-3 sm:py-4 text-left text-[10px] sm:text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
               >
                 Links
               </th>
               <th
                 scope="col"
-                className="px-6 py-4 text-right text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
+                className="px-3 sm:px-6 py-3 sm:py-4 text-right text-[10px] sm:text-xs font-semibold text-text-secondary uppercase tracking-wider bg-surface-highlight border-b border-border"
               >
                 Actions
               </th>
@@ -167,67 +167,67 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                     selectedIds.has(project.id) ? "bg-primary/10" : ""
                   }`}
                 >
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <input
                       type="checkbox"
                       checked={selectedIds.has(project.id)}
                       onChange={() => onToggleSelect(project.id)}
-                      className="w-4 h-4 rounded border-border bg-surface-highlight text-primary focus:ring-primary cursor-pointer"
+                      className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded border-border bg-surface-highlight text-primary focus:ring-primary cursor-pointer"
                     />
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="text-sm font-semibold text-white font-display">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4">
+                    <div className="text-xs sm:text-sm font-semibold text-white font-display">
                       {project.name}
                     </div>
-                    <div className="text-xs text-text-secondary truncate max-w-xs mt-0.5">
+                    <div className="text-[10px] sm:text-xs text-text-secondary truncate max-w-[120px] sm:max-w-xs mt-0.5">
                       {project.description}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <span
-                      className={`px-2.5 py-1 inline-flex text-[11px] leading-4 font-semibold rounded-full ${getCategoryBadge(
+                      className={`px-1.5 sm:px-2.5 py-0.5 sm:py-1 inline-flex text-[9px] sm:text-[11px] leading-4 font-semibold rounded-full ${getCategoryBadge(
                         project.category
                       )}`}
                     >
                       {project.category}
                     </span>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
+                  <td className="hidden sm:table-cell px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <div className="h-6 w-6 rounded-full bg-surface-highlight flex items-center justify-center text-[10px] text-text-secondary font-bold mr-2 border border-border">
+                      <div className="h-5 w-5 sm:h-6 sm:w-6 rounded-full bg-surface-highlight flex items-center justify-center text-[8px] sm:text-[10px] text-text-secondary font-bold mr-1.5 sm:mr-2 border border-border">
                         {project.profileOwner.slice(0, 2).toUpperCase()}
                       </div>
-                      <span className="text-sm text-text-secondary">
+                      <span className="text-xs sm:text-sm text-text-secondary truncate max-w-[80px] sm:max-w-none">
                         {project.profileOwner}
                       </span>
                     </div>
                   </td>
-                  <td className="px-6 py-4">
-                    <div className="flex flex-wrap gap-1.5">
-                      {project.tags.slice(0, 3).map((tag) => (
+                  <td className="hidden md:table-cell px-3 sm:px-6 py-3 sm:py-4">
+                    <div className="flex flex-wrap gap-1 sm:gap-1.5">
+                      {project.tags.slice(0, 2).map((tag) => (
                         <span
                           key={tag}
-                          className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-surface-highlight border border-white/5 text-text-secondary"
+                          className="inline-flex items-center px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[11px] font-medium bg-surface-highlight border border-white/5 text-text-secondary"
                         >
                           {tag}
                         </span>
                       ))}
-                      {project.tags.length > 3 && (
-                        <span className="text-[10px] text-text-secondary/50 py-0.5 ml-1">
-                          +{project.tags.length - 3}
+                      {project.tags.length > 2 && (
+                        <span className="text-[9px] sm:text-[10px] text-text-secondary/50 py-0.5 ml-0.5 sm:ml-1">
+                          +{project.tags.length - 2}
                         </span>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-slate-500">
-                    <div className="flex items-center gap-2">
-                      {project.links.map((link) => (
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-sm text-slate-500">
+                    <div className="flex items-center gap-1 sm:gap-2">
+                      {project.links.slice(0, 2).map((link) => (
                         <a
                           key={link.id}
                           href={link.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-text-secondary hover:text-white transition-colors p-1 hover:bg-white/10 rounded"
+                          className="text-text-secondary hover:text-white transition-colors p-0.5 sm:p-1 hover:bg-white/10 rounded"
                           title={`${link.type}: ${link.label}`}
                         >
                           {getLinkIcon(link.type)}
@@ -235,8 +235,8 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
                       ))}
                     </div>
                   </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <div className="flex justify-end gap-2">
+                  <td className="px-3 sm:px-6 py-3 sm:py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <div className="flex justify-end gap-1 sm:gap-2">
                       <button
                         onClick={() => {
                           if (isOwner) onEdit(project);

@@ -106,17 +106,17 @@ export const SignIn: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-background px-4 py-6 sm:p-4 relative overflow-hidden">
       {/* Dynamic Background Elements */}
-      <div className="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] animate-pulse"></div>
-      <div className="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]"></div>
+      <div className="absolute top-[-10%] right-[-10%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-primary/10 rounded-full blur-[80px] sm:blur-[120px] animate-pulse"></div>
+      <div className="absolute bottom-[-10%] left-[-10%] w-[300px] sm:w-[500px] h-[300px] sm:h-[500px] bg-primary/5 rounded-full blur-[80px] sm:blur-[120px]"></div>
 
-      <div className="max-w-md w-full glass rounded-3xl overflow-hidden relative z-10 border border-white/5">
-        <div className="p-8 sm:p-10">
-          <div className="flex justify-center mb-8">
-            <div className="w-24 h-24 relative flex items-center justify-center group">
-              <div className="absolute inset-0 bg-primary/20 blur-2xl rounded-full group-hover:bg-primary/30 transition-all duration-500"></div>
-              <div className="relative w-20 h-20 bg-surface-highlight border border-white/10 rounded-2xl flex items-center justify-center shadow-inner transform group-hover:scale-105 transition-transform duration-300 overflow-hidden p-3">
+      <div className="max-w-md w-full glass rounded-2xl sm:rounded-3xl overflow-hidden relative z-10 border border-white/5">
+        <div className="p-6 sm:p-8 md:p-10">
+          <div className="flex justify-center mb-6 sm:mb-8">
+            <div className="w-20 h-20 sm:w-24 sm:h-24 relative flex items-center justify-center group">
+              <div className="absolute inset-0 bg-primary/20 blur-xl sm:blur-2xl rounded-full group-hover:bg-primary/30 transition-all duration-500"></div>
+              <div className="relative w-16 h-16 sm:w-20 sm:h-20 bg-surface-highlight border border-white/10 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-inner transform group-hover:scale-105 transition-transform duration-300 overflow-hidden p-2.5 sm:p-3">
                 <img
                   src={logo}
                   alt="PRONTX Logo"
@@ -126,25 +126,27 @@ export const SignIn: React.FC = () => {
             </div>
           </div>
 
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-display font-bold text-white tracking-tight mb-2">
+          <div className="text-center mb-6 sm:mb-8">
+            <h2 className="text-2xl sm:text-3xl font-display font-bold text-white tracking-tight mb-1.5 sm:mb-2">
               Welcome back
             </h2>
-            <p className="text-text-secondary text-sm">
+            <p className="text-text-secondary text-xs sm:text-sm">
               Sign in with your @prontx.com account
             </p>
           </div>
 
           {/* Error Message */}
           {error && (
-            <div className="mb-4 p-3 bg-red-500/10 border border-red-500/30 rounded-xl">
-              <p className="text-red-400 text-sm text-center">{error}</p>
+            <div className="mb-4 p-2.5 sm:p-3 bg-red-500/10 border border-red-500/30 rounded-lg sm:rounded-xl">
+              <p className="text-red-400 text-xs sm:text-sm text-center">
+                {error}
+              </p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
             <div className="space-y-1.5">
-              <label className="text-xs font-bold uppercase tracking-wider text-text-secondary ml-1">
+              <label className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-text-secondary ml-1">
                 Email Address
               </label>
               <input
@@ -152,17 +154,17 @@ export const SignIn: React.FC = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full px-4 py-3 bg-surface/40 border border-white/10 text-text-main rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-surface/40 border border-white/10 text-text-main rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30 text-sm sm:text-base"
                 placeholder="john.doe (or john.doe@prontx.com)"
               />
-              <p className="text-xs text-text-secondary/60 ml-1">
+              <p className="text-[10px] sm:text-xs text-text-secondary/60 ml-1">
                 @prontx.com will be added automatically
               </p>
             </div>
 
             <div className="space-y-1.5">
               <div className="flex justify-between items-center ml-1">
-                <label className="text-xs font-bold uppercase tracking-wider text-text-secondary">
+                <label className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-text-secondary">
                   Password
                 </label>
               </div>
@@ -172,7 +174,7 @@ export const SignIn: React.FC = () => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 minLength={6}
-                className="w-full px-4 py-3 bg-surface/40 border border-white/10 text-text-main rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30"
+                className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-surface/40 border border-white/10 text-text-main rounded-lg sm:rounded-xl focus:ring-2 focus:ring-primary/50 focus:border-primary outline-none transition-all placeholder:text-text-secondary/30 text-sm sm:text-base"
                 placeholder="••••••••"
               />
             </div>
@@ -180,7 +182,7 @@ export const SignIn: React.FC = () => {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full flex items-center justify-center gap-3 px-4 py-4 mt-2 bg-primary text-white rounded-xl font-bold hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-primary/25"
+              className="w-full flex items-center justify-center gap-2 sm:gap-3 px-4 py-3 sm:py-4 mt-2 bg-primary text-white rounded-lg sm:rounded-xl font-bold hover:brightness-110 active:scale-[0.98] transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl shadow-primary/25 text-sm sm:text-base"
             >
               {isSubmitting ? (
                 <>
@@ -211,8 +213,8 @@ export const SignIn: React.FC = () => {
             </button>
           </form>
 
-          <div className="mt-8 text-center">
-            <p className="text-sm text-text-secondary">
+          <div className="mt-6 sm:mt-8 text-center">
+            <p className="text-xs sm:text-sm text-text-secondary">
               New here?{" "}
               <Link
                 to="/signup"
@@ -224,8 +226,8 @@ export const SignIn: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-white/[0.02] p-5 border-t border-white/5 text-center">
-          <p className="text-[10px] uppercase tracking-[0.2em] text-text-secondary/60 font-medium">
+        <div className="bg-white/[0.02] p-4 sm:p-5 border-t border-white/5 text-center">
+          <p className="text-[9px] sm:text-[10px] uppercase tracking-[0.15em] sm:tracking-[0.2em] text-text-secondary/60 font-medium">
             &copy; {new Date().getFullYear()} PRONTX Indexic &bull; Secure
             Infrastructure
           </p>

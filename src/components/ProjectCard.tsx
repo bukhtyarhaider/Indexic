@@ -136,21 +136,21 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
 
   return (
     <div
-      className={`group relative flex flex-col h-full bg-surface/40 backdrop-blur-sm border transition-all duration-300 rounded-2xl overflow-hidden ${
+      className={`group relative flex flex-col h-full bg-surface/40 backdrop-blur-sm border transition-all duration-300 rounded-xl sm:rounded-2xl overflow-hidden ${
         isSelected
           ? "border-primary ring-1 ring-primary shadow-lg shadow-primary/20"
           : "border-white/10 hover:border-white/20 hover:shadow-xl hover:shadow-black/20"
       }`}
     >
-      <div className="p-5 flex flex-col h-full">
+      <div className="p-3 sm:p-5 flex flex-col h-full">
         {/* Header: Checkbox & Category */}
-        <div className="flex items-start justify-between mb-3">
+        <div className="flex items-start justify-between mb-2 sm:mb-3">
           <div className="relative z-20">
             <input
               type="checkbox"
               checked={isSelected}
               onChange={() => onToggleSelect(project.id)}
-              className={`w-5 h-5 rounded border-white/20 bg-surface text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer transition-all duration-200 ${
+              className={`w-4 h-4 sm:w-5 sm:h-5 rounded border-white/20 bg-surface text-primary focus:ring-primary focus:ring-offset-0 cursor-pointer transition-all duration-200 ${
                 isSelected
                   ? "opacity-100 scale-110"
                   : "opacity-60 hover:opacity-100"
@@ -159,7 +159,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             />
           </div>
           <span
-            className={`text-[10px] uppercase tracking-widest font-bold px-2 py-0.5 rounded border ${getCategoryStyles(
+            className={`text-[9px] sm:text-[10px] uppercase tracking-widest font-bold px-1.5 sm:px-2 py-0.5 rounded border ${getCategoryStyles(
               project.category
             )}`}
           >
@@ -168,52 +168,52 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
         </div>
 
         {/* Title & Description */}
-        <div className="mb-4 flex-1">
-          <div className="flex justify-between items-start gap-2 mb-2">
+        <div className="mb-3 sm:mb-4 flex-1">
+          <div className="flex justify-between items-start gap-2 mb-1 sm:mb-2">
             <h3
-              className="text-lg font-semibold text-white group-hover:text-primary transition-colors line-clamp-1"
+              className="text-base sm:text-lg font-semibold text-white group-hover:text-primary transition-colors line-clamp-1"
               title={project.name}
             >
               {project.name}
             </h3>
             {/* Links Inline with Title (optional) or keep in footer */}
           </div>
-          <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">
+          <p className="text-xs sm:text-sm text-text-secondary leading-relaxed line-clamp-2 sm:line-clamp-3">
             {project.description}
           </p>
         </div>
 
         {/* Tags */}
-        <div className="flex flex-wrap gap-1.5 mb-4 min-h-[1.5rem]">
+        <div className="flex flex-wrap gap-1 sm:gap-1.5 mb-3 sm:mb-4 min-h-[1.25rem] sm:min-h-[1.5rem]">
           {project.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
-              className="text-[10px] bg-white/5 text-text-secondary px-2 py-0.5 rounded-md border border-white/5 font-medium"
+              className="text-[9px] sm:text-[10px] bg-white/5 text-text-secondary px-1.5 sm:px-2 py-0.5 rounded-md border border-white/5 font-medium"
             >
               {tag}
             </span>
           ))}
           {project.tags.length > 3 && (
-            <span className="text-[10px] text-text-secondary/40 self-center">
+            <span className="text-[9px] sm:text-[10px] text-text-secondary/40 self-center">
               +{project.tags.length - 3}
             </span>
           )}
         </div>
 
         {/* Footer: Owner, Links, Actions */}
-        <div className="pt-4 border-t border-white/5 flex items-center justify-between gap-2">
+        <div className="pt-3 sm:pt-4 border-t border-white/5 flex items-center justify-between gap-2">
           {/* Owner */}
-          <div className="flex items-center gap-2 min-w-0">
+          <div className="flex items-center gap-1.5 sm:gap-2 min-w-0">
             {getProfileAvatar(project.profileOwner)}
-            <span className="text-xs font-medium text-text-secondary/70 truncate hidden sm:block max-w-[80px]">
+            <span className="text-[10px] sm:text-xs font-medium text-text-secondary/70 truncate hidden xs:block max-w-[60px] sm:max-w-[80px]">
               {project.profileOwner}
             </span>
           </div>
 
           {/* Actions & Links Container */}
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5 sm:gap-1">
             {/* Links */}
-            <div className="flex items-center gap-1 mr-2 border-r border-white/10 pr-2">
+            <div className="flex items-center gap-0.5 sm:gap-1 mr-1 sm:mr-2 border-r border-white/10 pr-1 sm:pr-2">
               {project.links.slice(0, 2).map((link) => (
                 <a
                   key={link.id}
@@ -221,7 +221,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   target="_blank"
                   rel="noopener noreferrer"
                   title={`${link.type}: ${link.label}`}
-                  className="p-1.5 text-text-secondary hover:text-white hover:bg-white/5 rounded-lg transition-colors"
+                  className="p-1 sm:p-1.5 text-text-secondary hover:text-white hover:bg-white/5 rounded-lg transition-colors"
                 >
                   {getLinkIcon(link.type)}
                 </a>
@@ -229,13 +229,13 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
 
             {/* Action Buttons */}
-            <div className="flex items-center gap-1">
+            <div className="flex items-center gap-0.5 sm:gap-1">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   if (isOwner) onEdit(project);
                 }}
-                className={`p-1.5 rounded-lg transition-colors ${
+                className={`p-1 sm:p-1.5 rounded-lg transition-colors ${
                   isOwner
                     ? "text-text-secondary hover:text-white hover:bg-white/10 cursor-pointer"
                     : "text-text-secondary/30 cursor-not-allowed"
@@ -244,7 +244,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 disabled={!isOwner}
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -262,11 +262,11 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   e.stopPropagation();
                   onCopy(project);
                 }}
-                className="p-1.5 text-text-secondary hover:text-white hover:bg-white/10 rounded-lg transition-colors"
+                className="p-1 sm:p-1.5 text-text-secondary hover:text-white hover:bg-white/10 rounded-lg transition-colors"
                 title="Copy"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -284,7 +284,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                   e.stopPropagation();
                   if (isOwner) onDelete(project);
                 }}
-                className={`p-1.5 rounded-lg transition-colors ${
+                className={`p-1 sm:p-1.5 rounded-lg transition-colors ${
                   isOwner
                     ? "text-text-secondary hover:text-red-400 hover:bg-red-500/10 cursor-pointer"
                     : "text-text-secondary/30 cursor-not-allowed"
@@ -295,7 +295,7 @@ export const ProjectCard: React.FC<ProjectCardProps> = ({
                 disabled={!isOwner}
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"

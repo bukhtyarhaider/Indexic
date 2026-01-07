@@ -212,43 +212,45 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   // View 3: Proposal Display
   if (step === "proposal" && proposal) {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-        <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-3xl h-[85vh] flex flex-col border border-border">
-          <div className="p-6 border-b border-border flex justify-between items-center bg-surface rounded-t-2xl">
-            <h2 className="text-xl font-bold font-display text-white">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
+        <div className="bg-surface rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-3xl h-[90vh] sm:h-[85vh] flex flex-col border border-border">
+          <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface rounded-t-2xl sm:rounded-t-2xl">
+            <h2 className="text-lg sm:text-xl font-bold font-display text-white">
               Generated Proposal
             </h2>
             <button
               onClick={() => setStep("config")}
-              className="text-textSecondary hover:text-white transition-colors"
+              className="text-text-secondary hover:text-white transition-colors"
             >
-              <span className="text-sm font-semibold">Back to Config</span>
+              <span className="text-xs sm:text-sm font-semibold">
+                Back to Config
+              </span>
             </button>
           </div>
-          <div className="flex-1 p-6 overflow-hidden flex flex-col">
+          <div className="flex-1 p-4 sm:p-6 overflow-hidden flex flex-col">
             <textarea
               readOnly
               value={proposal}
-              className="w-full h-full p-4 bg-surfaceHighlight border border-border text-white rounded-xl focus:outline-none resize-none font-mono text-sm leading-relaxed"
+              className="w-full h-full p-3 sm:p-4 bg-surface-highlight border border-border text-white rounded-lg sm:rounded-xl focus:outline-none resize-none font-mono text-xs sm:text-sm leading-relaxed"
             />
           </div>
-          <div className="p-6 border-t border-border bg-surface rounded-b-2xl flex justify-between items-center">
+          <div className="p-4 sm:p-6 border-t border-border bg-surface rounded-b-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
             <button
               onClick={handleClose}
-              className="px-5 py-2.5 border border-border rounded-xl text-textMain font-semibold hover:bg-surfaceHighlight transition-colors"
+              className="hidden sm:block px-5 py-2.5 border border-border rounded-xl text-text-main font-semibold hover:bg-surface-highlight transition-colors"
             >
               Close
             </button>
-            <div className="flex gap-3">
+            <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
               <button
                 onClick={() => setStep("config")}
-                className="px-5 py-2.5 border border-border rounded-xl text-textMain font-semibold hover:bg-surfaceHighlight transition-colors"
+                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 border border-border rounded-lg sm:rounded-xl text-text-main font-semibold hover:bg-surface-highlight transition-colors text-sm"
               >
                 Regenerate
               </button>
               <button
                 onClick={copyProposalToClipboard}
-                className="px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primaryHover shadow-glow transition-all active:scale-95 flex items-center gap-2"
+                className="flex-1 sm:flex-initial px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-white font-semibold rounded-lg sm:rounded-xl hover:bg-primary-hover shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 text-sm"
               >
                 <svg
                   className="w-4 h-4"
@@ -263,7 +265,8 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                     d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
                   />
                 </svg>
-                Copy Plain Text
+                <span className="hidden xs:inline">Copy Plain Text</span>
+                <span className="xs:hidden">Copy</span>
               </button>
             </div>
           </div>
@@ -275,26 +278,26 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   // View 2: Configuration
   if (step === "config") {
     return (
-      <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-        <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-lg flex flex-col border border-border">
-          <div className="p-6 border-b border-border flex justify-between items-center bg-surface rounded-t-2xl">
-            <h2 className="text-xl font-bold font-display text-white">
+      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
+        <div className="bg-surface rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg flex flex-col border border-border max-h-[90vh] overflow-y-auto">
+          <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface rounded-t-2xl">
+            <h2 className="text-lg sm:text-xl font-bold font-display text-white">
               Proposal Settings
             </h2>
             <button
               onClick={() => setStep("search")}
-              className="text-textSecondary hover:text-white transition-colors"
+              className="text-text-secondary hover:text-white transition-colors"
             >
-              <span className="text-sm font-semibold">Back</span>
+              <span className="text-xs sm:text-sm font-semibold">Back</span>
             </button>
           </div>
 
-          <div className="p-6 space-y-6">
+          <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             <div>
-              <label className="block text-sm font-semibold text-textMain mb-2">
+              <label className="block text-xs sm:text-sm font-semibold text-text-main mb-1.5 sm:mb-2">
                 Client Name <span className="text-red-400 font-normal">*</span>
-                <span className="text-textSecondary font-normal text-xs ml-1">
-                  (Required for proposal generation)
+                <span className="text-text-secondary font-normal text-[10px] sm:text-xs ml-1">
+                  (Required for proposal)
                 </span>
               </label>
               <input
@@ -302,43 +305,47 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
                 placeholder="e.g. John Smith, or Acme Corp"
-                className="w-full px-4 py-2.5 bg-surfaceHighlight border border-border text-white rounded-xl focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-textSecondary"
+                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-surface-highlight border border-border text-white rounded-lg sm:rounded-xl focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-text-secondary text-sm"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-semibold text-textMain mb-3">
+              <label className="block text-xs sm:text-sm font-semibold text-text-main mb-2 sm:mb-3">
                 Sender Identity{" "}
-                <span className="text-textSecondary font-normal">
+                <span className="text-text-secondary font-normal text-[10px] sm:text-xs">
                   (Who is sending this?)
                 </span>
               </label>
 
-              <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
                 <button
                   onClick={() => setSenderType("agency")}
-                  className={`p-4 rounded-xl border text-left transition-all ${
+                  className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border text-left transition-all ${
                     senderType === "agency"
                       ? "bg-primary/10 border-primary ring-1 ring-primary"
-                      : "bg-surfaceHighlight border-border hover:border-textSecondary"
+                      : "bg-surface-highlight border-border hover:border-text-secondary"
                   }`}
                 >
-                  <div className="font-bold text-white mb-1">Agency</div>
-                  <div className="text-xs text-textSecondary">
-                    ProntX (Software & Design Agency)
+                  <div className="font-bold text-white text-xs sm:text-sm mb-0.5 sm:mb-1">
+                    Agency
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-text-secondary">
+                    ProntX (Software & Design)
                   </div>
                 </button>
 
                 <button
                   onClick={() => setSenderType("individual")}
-                  className={`p-4 rounded-xl border text-left transition-all ${
+                  className={`p-3 sm:p-4 rounded-lg sm:rounded-xl border text-left transition-all ${
                     senderType === "individual"
                       ? "bg-primary/10 border-primary ring-1 ring-primary"
-                      : "bg-surfaceHighlight border-border hover:border-textSecondary"
+                      : "bg-surface-highlight border-border hover:border-text-secondary"
                   }`}
                 >
-                  <div className="font-bold text-white mb-1">Individual</div>
-                  <div className="text-xs text-textSecondary">
+                  <div className="font-bold text-white text-xs sm:text-sm mb-0.5 sm:mb-1">
+                    Individual
+                  </div>
+                  <div className="text-[10px] sm:text-xs text-text-secondary">
                     Freelancer / Consultant
                   </div>
                 </button>
@@ -346,23 +353,23 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
 
               {senderType === "individual" && (
                 <div className="animate-fade-in">
-                  <label className="block text-xs font-semibold text-textSecondary mb-1.5 uppercase tracking-wide">
+                  <label className="block text-[10px] sm:text-xs font-semibold text-text-secondary mb-1 sm:mb-1.5 uppercase tracking-wide">
                     Sender Name
                   </label>
                   <input
                     type="text"
                     value={senderName}
                     onChange={(e) => setSenderName(e.target.value)}
-                    className="w-full px-4 py-2.5 bg-surfaceHighlight border border-border text-white rounded-xl focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all"
+                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-surface-highlight border border-border text-white rounded-lg sm:rounded-xl focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
                   />
                 </div>
               )}
             </div>
 
-            <div className="p-4 bg-surfaceHighlight/50 rounded-xl border border-border">
-              <div className="flex items-center gap-2 mb-2">
+            <div className="p-3 sm:p-4 bg-surface-highlight/50 rounded-lg sm:rounded-xl border border-border">
+              <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
                 <svg
-                  className="w-4 h-4 text-primary"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -374,24 +381,23 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                     d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                <span className="text-xs font-bold text-white uppercase tracking-wider">
+                <span className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wider">
                   Note
                 </span>
               </div>
-              <p className="text-xs text-textSecondary">
+              <p className="text-[10px] sm:text-xs text-text-secondary">
                 The proposal will include{" "}
                 <strong>{selectedResultIds.size} selected projects</strong>. It
-                will be generated in <strong>Plain Text</strong> format, ready
-                for email.
+                will be generated in <strong>Plain Text</strong> format.
               </p>
             </div>
           </div>
 
-          <div className="p-6 border-t border-border bg-surface rounded-b-2xl flex justify-end">
+          <div className="p-4 sm:p-6 border-t border-border bg-surface rounded-b-2xl flex justify-end">
             <button
               onClick={handleGenerateProposal}
               disabled={generatingProposal}
-              className="w-full sm:w-auto px-6 py-2.5 bg-gradient-to-r from-primaryGradientStart to-primaryGradientEnd text-white font-semibold rounded-xl hover:brightness-110 shadow-glow transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full sm:w-auto px-5 sm:px-6 py-2.5 bg-gradient-to-r from-primary-gradient-start to-primary-gradient-end text-white font-semibold rounded-lg sm:rounded-xl hover:brightness-110 shadow-glow transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
             >
               {generatingProposal ? (
                 <>
@@ -429,14 +435,14 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
 
   // View 1: Main Search & Selection (Default)
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm">
-      <div className="bg-surface rounded-2xl shadow-2xl w-full max-w-3xl max-h-[85vh] flex flex-col border border-border">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
+      <div className="bg-surface rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-border">
         {/* Header */}
-        <div className="p-6 border-b border-border flex justify-between items-center bg-surface z-10 rounded-t-2xl">
-          <div className="flex items-center gap-3">
-            <div className="bg-gradient-to-br from-primaryGradientStart to-primaryGradientEnd text-white p-2 rounded-lg shadow-glow">
+        <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface z-10 rounded-t-2xl">
+          <div className="flex items-center gap-2 sm:gap-3">
+            <div className="bg-primary text-white p-1.5 sm:p-2 rounded-lg shadow-glow">
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4 sm:w-5 sm:h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -450,20 +456,20 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
               </svg>
             </div>
             <div>
-              <h2 className="text-xl font-bold font-display text-white">
+              <h2 className="text-base sm:text-xl font-bold font-display text-white">
                 AI Requirement Match
               </h2>
-              <p className="text-xs text-textSecondary">
+              <p className="text-[10px] sm:text-xs text-text-secondary hidden sm:block">
                 Input client needs to find the best portfolio matches.
               </p>
             </div>
           </div>
           <button
             onClick={handleClose}
-            className="text-textSecondary hover:text-white transition-colors"
+            className="text-text-secondary hover:text-white transition-colors p-1"
           >
             <svg
-              className="w-6 h-6"
+              className="w-5 h-5 sm:w-6 sm:h-6"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -479,23 +485,23 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Input Section */}
-          <div className="space-y-3">
-            <label className="block text-sm font-semibold text-textMain">
+          <div className="space-y-2 sm:space-y-3">
+            <label className="block text-xs sm:text-sm font-semibold text-text-main">
               Client Requirements / Project Brief
             </label>
             <textarea
               value={requirements}
               onChange={(e) => setRequirements(e.target.value)}
-              className="w-full px-4 py-3 bg-surfaceHighlight border border-border text-white rounded-xl h-32 resize-none focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-textSecondary/50"
-              placeholder="e.g., The client needs a fintech dashboard with dark mode and real-time stock visualization. They like vibrant colors..."
+              className="w-full px-3 sm:px-4 py-2.5 sm:py-3 bg-surface-highlight border border-border text-white rounded-lg sm:rounded-xl h-24 sm:h-32 resize-none focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-text-secondary/50 text-sm"
+              placeholder="e.g., The client needs a fintech dashboard with dark mode and real-time stock visualization..."
             />
             <div className="flex justify-end">
               <button
                 onClick={handleAnalyze}
                 disabled={loading || !requirements.trim()}
-                className="px-6 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primaryHover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-glow active:scale-95 flex items-center gap-2"
+                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-white font-semibold rounded-lg sm:rounded-xl hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-glow active:scale-95 flex items-center gap-2 text-sm"
               >
                 {loading ? (
                   <>
@@ -548,9 +554,9 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
           {/* Results Section */}
           <div>
             {!hasSearched && !loading && (
-              <div className="text-center py-8 text-textSecondary">
+              <div className="text-center py-6 sm:py-8 text-text-secondary">
                 <svg
-                  className="w-12 h-12 mx-auto mb-3 opacity-20"
+                  className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 opacity-20"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -562,15 +568,17 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                     d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
                   />
                 </svg>
-                <p>Enter requirements above to see AI-recommended projects.</p>
+                <p className="text-xs sm:text-sm">
+                  Enter requirements above to see AI-recommended projects.
+                </p>
               </div>
             )}
 
             {hasSearched && (
-              <div className="space-y-4">
-                <div className="flex items-start gap-3 p-4 bg-primary/10 border border-primary/20 rounded-xl">
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-primary/10 border border-primary/20 rounded-lg sm:rounded-xl">
                   <svg
-                    className="w-5 h-5 text-primary flex-shrink-0 mt-0.5"
+                    className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -582,11 +590,11 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                       d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  <p className="text-sm text-textMain">{message}</p>
+                  <p className="text-xs sm:text-sm text-text-main">{message}</p>
                 </div>
 
                 {results.length > 0 ? (
-                  <div className="grid grid-cols-1 gap-3">
+                  <div className="grid grid-cols-1 gap-2 sm:gap-3">
                     {results.map((result) => {
                       const project = projects.find(
                         (p) => p.id === result.projectId
@@ -600,23 +608,23 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                         <div
                           key={result.projectId}
                           onClick={() => toggleSelect(result.projectId)}
-                          className={`group p-4 rounded-xl border cursor-pointer transition-all ${
+                          className={`group p-3 sm:p-4 rounded-lg sm:rounded-xl border cursor-pointer transition-all ${
                             isSelected
-                              ? "bg-surfaceHighlight border-primary ring-1 ring-primary"
-                              : "bg-surface border-border hover:bg-surfaceHighlight"
+                              ? "bg-surface-highlight border-primary ring-1 ring-primary"
+                              : "bg-surface border-border hover:bg-surface-highlight"
                           }`}
                         >
-                          <div className="flex items-start gap-4">
+                          <div className="flex items-start gap-2.5 sm:gap-4">
                             <div
-                              className={`mt-1 w-5 h-5 rounded border flex items-center justify-center transition-colors ${
+                              className={`mt-0.5 sm:mt-1 w-4 h-4 sm:w-5 sm:h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
                                 isSelected
                                   ? "bg-primary border-primary"
-                                  : "border-textSecondary bg-transparent"
+                                  : "border-text-secondary bg-transparent"
                               }`}
                             >
                               {isSelected && (
                                 <svg
-                                  className="w-3.5 h-3.5 text-white"
+                                  className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white"
                                   fill="none"
                                   stroke="currentColor"
                                   viewBox="0 0 24 24"
@@ -630,22 +638,22 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                                 </svg>
                               )}
                             </div>
-                            <div className="flex-1">
-                              <div className="flex justify-between items-start mb-1">
-                                <h4 className="font-bold text-white font-display">
+                            <div className="flex-1 min-w-0">
+                              <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1 sm:gap-2 mb-1">
+                                <h4 className="font-bold text-white font-display text-sm sm:text-base truncate">
                                   {project.name}
                                 </h4>
-                                <span className="text-[10px] uppercase bg-surface border border-border px-2 py-0.5 rounded text-textSecondary">
+                                <span className="text-[9px] sm:text-[10px] uppercase bg-surface border border-border px-1.5 sm:px-2 py-0.5 rounded text-text-secondary w-fit flex-shrink-0">
                                   {project.category}
                                 </span>
                               </div>
-                              <p className="text-xs text-primary mb-2 font-semibold">
-                                Match Reason:{" "}
-                                <span className="text-textSecondary font-normal">
+                              <p className="text-[10px] sm:text-xs text-primary mb-1.5 sm:mb-2 font-semibold">
+                                Match:{" "}
+                                <span className="text-text-secondary font-normal">
                                   {result.reason}
                                 </span>
                               </p>
-                              <p className="text-sm text-textSecondary line-clamp-2 pl-3 border-l-2 border-border italic">
+                              <p className="text-xs sm:text-sm text-text-secondary line-clamp-2 pl-2 sm:pl-3 border-l-2 border-border italic">
                                 "{project.description}"
                               </p>
                             </div>
@@ -655,8 +663,8 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                     })}
                   </div>
                 ) : (
-                  <div className="text-center py-8">
-                    <p className="text-textSecondary">
+                  <div className="text-center py-6 sm:py-8">
+                    <p className="text-text-secondary text-xs sm:text-sm">
                       No specific projects matched your criteria.
                     </p>
                   </div>
@@ -667,14 +675,14 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-6 border-t border-border bg-surface rounded-b-2xl flex justify-between items-center">
-          <span className="text-sm text-textSecondary">
+        <div className="p-4 sm:p-6 border-t border-border bg-surface rounded-b-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
+          <span className="text-xs sm:text-sm text-text-secondary order-2 sm:order-1">
             {selectedResultIds.size} projects selected
           </span>
-          <div className="flex gap-3">
+          <div className="flex gap-2 sm:gap-3 w-full sm:w-auto order-1 sm:order-2">
             <button
               onClick={handleClose}
-              className="px-5 py-2.5 border border-border rounded-xl text-textMain font-semibold hover:bg-surfaceHighlight transition-colors"
+              className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 border border-border rounded-lg sm:rounded-xl text-text-main font-semibold hover:bg-surface-highlight transition-colors text-sm"
             >
               Cancel
             </button>
@@ -683,10 +691,10 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
               <button
                 onClick={handleProceedToConfig}
                 disabled={selectedResultIds.size === 0}
-                className="px-5 py-2.5 bg-surfaceHighlight border border-primary/30 text-primary font-semibold rounded-xl hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 bg-surface-highlight border border-primary/30 text-primary font-semibold rounded-lg sm:rounded-xl hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2 text-sm"
               >
                 <svg
-                  className="w-4 h-4"
+                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -698,16 +706,20 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                   />
                 </svg>
-                Generate Proposal
+                <span className="hidden xs:inline">Generate Proposal</span>
+                <span className="xs:hidden">Proposal</span>
               </button>
             )}
 
             <button
               onClick={handleApply}
               disabled={selectedResultIds.size === 0}
-              className="px-6 py-2.5 bg-gradient-to-r from-primaryGradientStart to-primaryGradientEnd text-white font-semibold rounded-xl hover:brightness-110 disabled:opacity-50 disabled:cursor-not-allowed shadow-glow transition-all active:scale-95"
+              className="flex-1 sm:flex-initial px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-white border border-border rounded-lg sm:rounded-xl hover:text-white hover:bg-primary/70 disabled:opacity-50 disabled:cursor-not-allowed shadow-glow transition-all active:scale-95 text-sm"
             >
-              Select {selectedResultIds.size} Projects
+              <span className="hidden xs:inline">
+                Select {selectedResultIds.size}
+              </span>
+              <span className="xs:hidden">Select</span>
             </button>
           </div>
         </div>
