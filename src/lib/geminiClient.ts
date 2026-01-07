@@ -19,7 +19,7 @@ class GeminiClient {
   ];
 
   constructor() {
-    this.apiKey = process.env.API_KEY || "";
+    this.apiKey = import.meta.env.VITE_GEMINI_API_KEY || "";
     if (this.apiKey) {
       this.client = new GoogleGenAI({ apiKey: this.apiKey });
       console.log(
