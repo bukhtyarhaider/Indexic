@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MatchRecord } from "../types/match";
 import { Project } from "../types";
 import { useToast } from "../context/ToastContext";
+import { X, Clock } from "lucide-react";
 
 interface MatchHistoryModalProps {
   isOpen: boolean;
@@ -209,37 +210,13 @@ export const MatchHistoryModal: React.FC<MatchHistoryModalProps> = ({
               onClick={onClose}
               className="p-2 text-text-secondary hover:text-white hover:bg-surface-highlight rounded-lg transition-colors"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
+              <X className="w-5 h-5" />
             </button>
           </div>
           <div className="flex-1 overflow-y-auto">
             {sortedHistory.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full p-6 sm:p-8 text-center text-text-secondary">
-                <svg
-                  className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 opacity-20"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={1.5}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
+                <Clock className="w-12 h-12 sm:w-16 sm:h-16 mb-3 sm:mb-4 opacity-20" />
                 <p className="text-sm sm:text-base font-medium text-text-main mb-1">
                   No history yet
                 </p>

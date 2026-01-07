@@ -1,5 +1,6 @@
 import React from "react";
 import { Project, LinkType, ProjectCategory } from "../types";
+import { Figma } from "lucide-react";
 
 interface ProjectTableViewProps {
   projects: Project[];
@@ -38,30 +39,7 @@ export const ProjectTableView: React.FC<ProjectTableViewProps> = ({
   const getLinkIcon = (type: LinkType) => {
     switch (type) {
       case LinkType.FIGMA:
-        return (
-          <svg className="w-3.5 h-3.5" viewBox="0 0 15 23" fill="none">
-            <path
-              d="M3.75 22.5C5.82107 22.5 7.5 20.8211 7.5 18.75V11.25H3.75C1.67893 11.25 0 12.9289 0 15C0 17.0711 1.67893 18.75 3.75 18.75V22.5Z"
-              fill="#1ABCFE"
-            />
-            <path
-              d="M0 7.5C0 5.42893 1.67893 3.75 3.75 3.75H7.5V11.25H3.75C1.67893 11.25 0 9.57107 0 7.5Z"
-              fill="#A259FF"
-            />
-            <path
-              d="M15 7.5C15 9.57107 13.3211 11.25 11.25 11.25H7.5V3.75H11.25C13.3211 3.75 15 5.42893 15 7.5Z"
-              fill="#1ABCFE"
-            />
-            <path
-              d="M0 15C0 12.9289 1.67893 11.25 3.75 11.25H7.5V18.75H3.75C1.67893 18.75 0 17.0711 0 15Z"
-              fill="#F24E1E"
-            />
-            <path
-              d="M7.5 0H11.25C13.3211 0 15 1.67893 15 3.75V7.5H7.5V0Z"
-              fill="#FF7262"
-            />
-          </svg>
-        );
+        return <Figma className="w-3.5 h-3.5" />;
       case LinkType.GITHUB:
         return (
           <svg className="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24">
