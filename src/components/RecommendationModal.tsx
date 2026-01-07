@@ -8,6 +8,7 @@ import {
   validateMatchRequirements,
   validateProposalConfig,
 } from "../services/matchService";
+import { useToast } from "../context/ToastContext";
 
 interface RecommendationModalProps {
   isOpen: boolean;
@@ -38,6 +39,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   onSaveMatch,
   onUpdateMatch,
 }) => {
+  const { showError } = useToast();
   const [step, setStep] = useState<ModalStep>("search");
   const [currentMatchId, setCurrentMatchId] = useState<string | null>(null);
 
@@ -105,7 +107,8 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
       setCurrentMatchId(matchId);
     } catch (error) {
       console.error("Analysis error:", error);
-      setMessage("An error occurred while analyzing. Please try again.");
+      const errorMsg = error instanceof Error ? error.message : "An error occurred while analyzing. Please try again.";
+      showError(errorMsg);
       setHasSearched(false);
     } finally {
       setLoading(false);
@@ -160,7 +163,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
       console.error("Proposal generation error:", e);
       const errorMsg =
         e instanceof Error ? e.message : "Failed to generate proposal.";
-      setMessage(errorMsg);
+      showError(errorMsg);
       // Don't change step, stay on config so user can retry
     } finally {
       setGeneratingProposal(false);

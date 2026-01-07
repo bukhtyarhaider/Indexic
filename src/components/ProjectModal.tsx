@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Project, ProjectCategory, LinkType } from '../types';
 import { CATEGORY_OPTIONS, LINK_TYPE_OPTIONS } from '../constants';
 import { generateProjectEnhancements } from '../services/geminiService';
+import { useToast } from '../context/ToastContext';
 
 interface ProjectModalProps {
   isOpen: boolean;
@@ -11,6 +12,7 @@ interface ProjectModalProps {
 }
 
 export const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onSave, initialData }) => {
+  const { showError } = useToast();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState<Partial<Project>>({
     name: '',
@@ -62,7 +64,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({ isOpen, onClose, onS
         tags: Array.from(new Set([...(prev.tags || []), ...suggestedTags]))
       }));
     } catch (e) {
-      console.error(e);
+      console.error("Enhancement error:", e);
+      const errorMsg = e instanceof Error ? e.message : "Failed to enhance project. Please try again.";
+      showError(errorMsg);
     } finally {
       setLoading(false);
     }

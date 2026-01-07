@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { MatchRecord } from "../types/match";
 import { Project } from "../types";
+import { useToast } from "../context/ToastContext";
 
 interface MatchHistoryModalProps {
   isOpen: boolean;
@@ -33,6 +34,7 @@ export const MatchHistoryModal: React.FC<MatchHistoryModalProps> = ({
   onUpdateRecord,
   onReanalyzeMatch,
 }) => {
+  const { showError } = useToast();
   const [isGenerating, setIsGenerating] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [activeTab, setActiveTab] = useState<TabType>("recommendations");
@@ -131,6 +133,10 @@ export const MatchHistoryModal: React.FC<MatchHistoryModalProps> = ({
       setIsGenerating(true);
       try {
         await onGenerateProposal(updatedRecord);
+      } catch (error) {
+        console.error("Error generating proposal:", error);
+        const errorMsg = error instanceof Error ? error.message : "Failed to generate proposal. Please try again.";
+        showError(errorMsg);
       } finally {
         setIsGenerating(false);
       }
@@ -155,6 +161,10 @@ export const MatchHistoryModal: React.FC<MatchHistoryModalProps> = ({
       try {
         await onReanalyzeMatch(selectedRecord.id, editRequirements.trim());
         setShowEditRequirements(false);
+      } catch (error) {
+        console.error("Error re-analyzing:", error);
+        const errorMsg = error instanceof Error ? error.message : "Failed to re-analyze. Please try again.";
+        showError(errorMsg);
       } finally {
         setIsReanalyzing(false);
       }
