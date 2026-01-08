@@ -12,6 +12,7 @@ import { useToast } from "../context/ToastContext";
 import { useAuth } from "../context/AuthContext";
 
 import logo from "../assets/logo.png";
+import { Navbar } from "@/components/Navbar";
 import { RecommendationModal } from "@/components/RecommendationModal";
 import { MatchHistoryModal } from "@/components/MatchHistoryModal";
 import { RecommendationResult, MatchRecord } from "@/types/match";
@@ -239,7 +240,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         selectedProjects,
         clientName || "Client",
         senderType,
-        "Bukhtyar Haider"
+        user?.user_metadata?.full_name || "Bukhtyar Haider"
       );
 
       const errorIndicators = [
@@ -348,167 +349,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
         onChange={handleImportJSON}
       />
 
-      <nav className="glass sticky top-0 z-40 border-b-0">
-        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-14 sm:h-16">
-            <div className="flex items-center gap-2 sm:gap-3">
-              <div className="w-8 h-8 sm:w-10 sm:h-10 relative flex items-center justify-center">
-                <div className="absolute inset-0 bg-primary opacity-20 blur-lg rounded-full"></div>
-                <div className="relative flex items-center justify-center">
-                  <img
-                    src={logo}
-                    alt="Indexic Logo"
-                    className="w-6 h-6 sm:w-8 sm:h-8 object-contain"
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <span className="font-display font-bold text-base sm:text-lg text-white leading-none">
-                  INDEXIC
-                </span>
-                <span className="text-[8px] sm:text-[10px] text-text-secondary font-medium uppercase tracking-wider hidden sm:block">
-                  Manage your projects
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-1.5 sm:gap-3">
-              <Button
-                variant="primary"
-                size="icon"
-                className="sm:hidden w-9 h-9 rounded-lg"
-                title="Add Project"
-                onClick={() => setIsModalOpen(true)}
-              >
-                <Plus className="w-5 h-5" />
-              </Button>
-
-              <Button
-                variant="secondary"
-                size="icon"
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="sm:hidden w-9 h-9 rounded-lg"
-              >
-                {isMobileMenuOpen ? (
-                  <X className="w-5 h-5" />
-                ) : (
-                  <Menu className="w-5 h-5" />
-                )}
-              </Button>
-
-              <Button
-                variant="secondary"
-                onClick={handleExportJSON}
-                disabled={projects.length === 0}
-                className="hidden md:flex px-3 py-2 text-sm"
-                title="Export Data"
-                leftIcon={<Download className="w-4 h-4" />}
-              >
-                Export
-              </Button>
-
-              <Button
-                variant="secondary"
-                onClick={() => fileInputRef.current?.click()}
-                className="hidden md:flex px-3 py-2 text-sm"
-                title="Import Data"
-                leftIcon={<Upload className="w-4 h-4" />}
-              >
-                Import
-              </Button>
-
-              <div className="h-6 w-px bg-border mx-1 hidden sm:block"></div>
-
-              <Button
-                variant="ghost"
-                onClick={onLogout}
-                className="hidden sm:flex text-text-secondary hover:text-primary text-sm font-semibold mr-2"
-              >
-                Logout
-              </Button>
-
-              <Button
-                variant="secondary"
-                onClick={() => setIsGithubModalOpen(true)}
-                className="hidden sm:flex px-3 lg:px-4 py-2 text-sm"
-                leftIcon={<Github className="w-4 h-4" />}
-              >
-                <span className="hidden lg:inline">Import GitHub</span>
-                <span className="lg:hidden">GitHub</span>
-              </Button>
-
-              <Button
-                variant="primary"
-                onClick={() => setIsModalOpen(true)}
-                className="hidden sm:flex px-3 lg:px-4 py-2 text-sm"
-                leftIcon={<Plus className="w-4 h-4" />}
-              >
-                <span className="hidden lg:inline">New Project</span>
-                <span className="lg:hidden">New</span>
-              </Button>
-            </div>
-          </div>
-        </div>
-
-        {isMobileMenuOpen && (
-          <>
-            <div
-              className="sm:hidden fixed inset-0 top-14 bg-black/40 z-40"
-              onClick={() => setIsMobileMenuOpen(false)}
-            />
-            <div className="sm:hidden absolute left-0 right-0 top-full z-50 border-t border-border bg-surface/98 backdrop-blur-xl shadow-xl">
-              <div className="px-4 py-4 space-y-2">
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    setIsGithubModalOpen(true);
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full justify-start"
-                  leftIcon={<Github className="w-5 h-5" />}
-                >
-                  Import from GitHub
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    fileInputRef.current?.click();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full justify-start"
-                  leftIcon={<Upload className="w-5 h-5" />}
-                >
-                  Import JSON
-                </Button>
-                <Button
-                  variant="secondary"
-                  onClick={() => {
-                    handleExportJSON();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  disabled={projects.length === 0}
-                  className="w-full justify-start"
-                  leftIcon={<Download className="w-5 h-5" />}
-                >
-                  Export JSON
-                </Button>
-                <div className="h-px bg-border my-3"></div>
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    onLogout();
-                    setIsMobileMenuOpen(false);
-                  }}
-                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/10"
-                  leftIcon={<LogOut className="w-5 h-5" />}
-                >
-                  Logout
-                </Button>
-              </div>
-            </div>
-          </>
-        )}
-      </nav>
+      <Navbar
+        onExportJSON={handleExportJSON}
+        onImportJSON={() => fileInputRef.current?.click()}
+        onGithubImport={() => setIsGithubModalOpen(true)}
+        onNewProject={() => setIsModalOpen(true)}
+        hasProjects={projects.length > 0}
+      />
 
       <div className="bg-background border-b border-border pt-4 sm:pt-8 pb-4 sm:pb-8 px-3 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
@@ -557,7 +404,10 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             </div>
           </div>
 
-          <Card variant="surface" className="p-1.5 flex flex-col gap-2 shadow-sm">
+          <Card
+            variant="surface"
+            className="p-1.5 flex flex-col gap-2 shadow-sm"
+          >
             <div className="relative flex-1 group">
               <Input
                 value={filters.search}
@@ -577,7 +427,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   onChange={(e) =>
                     setFilters({ ...filters, category: e.target.value as any })
                   }
-                  className="flex-1 sm:flex-initial sm:min-w-[140px] lg:min-w-[160px]"
+                  className="flex-1 sm:flex-initial sm:min-w-35 lg:min-w-40"
                 >
                   <option value="All">All Categories</option>
                   {CATEGORY_OPTIONS.map((c) => (
@@ -592,7 +442,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                   onChange={(e) =>
                     setFilters({ ...filters, tag: e.target.value })
                   }
-                  className="flex-1 sm:flex-initial sm:max-w-[140px] lg:max-w-[160px]"
+                  className="flex-1 sm:flex-initial sm:max-w-35 lg:max-w-40"
                 >
                   <option value="All">All Tags</option>
                   {allTags.map((t) => (
@@ -620,20 +470,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                     variant="primary"
                     onClick={() => setIsRecommendationModalOpen(true)}
                     leftIcon={
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                      />
-                    </svg>
-
+                      <svg
+                        className="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
+                        />
+                      </svg>
                     }
                   >
                     <span>AI Match</span>
