@@ -21,6 +21,8 @@ interface AuthContextType {
   signIn: (email: string, password: string) => Promise<string | null>;
   signOut: () => Promise<void>;
   resetPassword: (email: string) => Promise<string | null>;
+  updateProfile: (data: { full_name?: string }) => Promise<string | null>;
+  updatePassword: (password: string) => Promise<string | null>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -177,6 +179,49 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     []
   );
 
+  const updateProfile = useCallback(
+    async (data: { full_name?: string }): Promise<string | null> => {
+      try {
+        const { user: updatedUser, error } = await authService.updateProfile({
+          data,
+        });
+        if (error) {
+          console.error("Update profile error:", error);
+          return error.message || "Failed to update profile.";
+        }
+        if (updatedUser) {
+          setUser(updatedUser);
+        }
+        return null;
+      } catch (error) {
+        console.error("Unexpected update profile error:", error);
+        return error instanceof Error
+          ? error.message
+          : "An unexpected error occurred";
+      }
+    },
+    []
+  );
+
+  const updatePassword = useCallback(
+    async (password: string): Promise<string | null> => {
+      try {
+        const { error } = await authService.updatePassword(password);
+        if (error) {
+          console.error("Update password error:", error);
+          return error.message || "Failed to update password.";
+        }
+        return null;
+      } catch (error) {
+        console.error("Unexpected update password error:", error);
+        return error instanceof Error
+          ? error.message
+          : "An unexpected error occurred";
+      }
+    },
+    []
+  );
+
   const value: AuthContextType = {
     user,
     isLoading,
@@ -185,6 +230,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     signIn,
     signOut: signOutFn,
     resetPassword,
+    updateProfile,
+    updatePassword,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

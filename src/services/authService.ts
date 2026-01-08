@@ -187,3 +187,54 @@ export const onAuthStateChange = (
 
   return subscription;
 };
+
+/**
+ * Update user profile
+ */
+export const updateProfile = async (
+  attributes: { data?: { full_name?: string } }
+): Promise<{ user: User | null; error: AuthError | null }> => {
+  if (!isSupabaseConfigured) {
+    return { user: null, error: createConfigError() };
+  }
+
+  try {
+    const { data, error } = await supabase.auth.updateUser(attributes);
+    return { user: data.user, error };
+  } catch (err) {
+    console.error('UpdateProfile error:', err);
+    return {
+      user: null,
+      error: {
+        message: 'Failed to update profile. Please try again.',
+        status: 500,
+        name: 'ConnectionError',
+      } as AuthError,
+    };
+  }
+};
+
+/**
+ * Update user password
+ */
+export const updatePassword = async (
+  password: string
+): Promise<{ error: AuthError | null }> => {
+  if (!isSupabaseConfigured) {
+    return { error: createConfigError() };
+  }
+
+  try {
+    const { error } = await supabase.auth.updateUser({ password });
+    return { error };
+  } catch (err) {
+    console.error('UpdatePassword error:', err);
+    return {
+      error: {
+        message: 'Failed to update password. Please try again.',
+        status: 500,
+        name: 'ConnectionError',
+      } as AuthError,
+    };
+  }
+};
