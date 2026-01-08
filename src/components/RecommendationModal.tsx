@@ -4,11 +4,29 @@ import { RecommendationResult } from "../types/match";
 import {
   getProjectRecommendations,
   generateProposal,
-  createMatchRecord,
   validateMatchRequirements,
   validateProposalConfig,
 } from "../services/matchService";
 import { useToast } from "../context/ToastContext";
+import {
+  Sparkles,
+  X,
+  Search,
+  Check,
+  Copy,
+  ChevronLeft,
+  FileText,
+  Loader2,
+  Info,
+  User,
+  Building2,
+  Briefcase,
+  Wand2,
+} from "lucide-react";
+import { Button } from "@/components/ui/Button";
+import { Input } from "@/components/ui/Input";
+import { Card } from "@/components/ui/Card";
+import { Badge } from "@/components/ui/Badge";
 
 interface RecommendationModalProps {
   isOpen: boolean;
@@ -22,7 +40,7 @@ interface RecommendationModalProps {
     clientName?: string,
     proposal?: string,
     senderType?: "agency" | "individual"
-  ) => string; // Returns the match record ID
+  ) => string;
   onUpdateMatch: (
     matchId: string,
     updates: { proposal?: string; clientName?: string }
@@ -82,7 +100,6 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
         projects
       );
 
-      // Only proceed if we got successful recommendations
       if (recommendations.length === 0) {
         setMessage(message || "No recommendations found.");
         setHasSearched(false);
@@ -91,17 +108,15 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
 
       setResults(recommendations);
       setMessage(message);
-      // Auto-select all recommendations by default
       setSelectedResultIds(new Set(recommendations.map((r) => r.projectId)));
       setHasSearched(true);
 
-      // Save match to history immediately after successful analysis
       const matchId = onSaveMatch(
         requirements,
         recommendations,
         recommendations.map((r) => r.projectId),
-        undefined, // No client name yet
-        undefined, // No proposal yet
+        undefined,
+        undefined,
         senderType
       );
       setCurrentMatchId(matchId);
@@ -123,7 +138,6 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   };
 
   const handleGenerateProposal = async () => {
-    // Require client name for proposal generation
     if (!clientName.trim()) {
       setMessage("Client name is required to generate a proposal.");
       return;
@@ -155,7 +169,6 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
       setProposal(text);
       setStep("proposal");
 
-      // Update existing match record with proposal and client name
       if (currentMatchId) {
         onUpdateMatch(currentMatchId, {
           proposal: text,
@@ -167,7 +180,6 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
       const errorMsg =
         e instanceof Error ? e.message : "Failed to generate proposal.";
       showError(errorMsg);
-      // Don't change step, stay on config so user can retry
     } finally {
       setGeneratingProposal(false);
     }
@@ -187,13 +199,11 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   };
 
   const handleApply = () => {
-    // Match already saved during analysis
     onSelectProjects(Array.from(selectedResultIds));
     handleClose();
   };
 
   const handleClose = () => {
-    // Reset all states
     setStep("search");
     setRequirements("");
     setResults([]);
@@ -209,23 +219,27 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
 
   if (!isOpen) return null;
 
-  // View 3: Proposal Display
+  // Render View 3: Proposal Display
   if (step === "proposal" && proposal) {
     return (
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
-        <div className="bg-surface rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-3xl h-[90vh] sm:h-[85vh] flex flex-col border border-border">
-          <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface rounded-t-2xl sm:rounded-t-2xl">
-            <h2 className="text-lg sm:text-xl font-bold font-display text-white">
-              Generated Proposal
-            </h2>
-            <button
+        <Card variant="surface" className="w-full sm:max-w-3xl h-[90vh] sm:h-[85vh] flex flex-col border border-border p-0 overflow-hidden">
+          <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <FileText className="w-5 h-5 text-primary" />
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold font-display text-white">
+                Generated Proposal
+              </h2>
+            </div>
+            <Button
+              variant="ghost"
               onClick={() => setStep("config")}
-              className="text-text-secondary hover:text-white transition-colors"
+              leftIcon={<ChevronLeft className="w-4 h-4" />}
             >
-              <span className="text-xs sm:text-sm font-semibold">
-                Back to Config
-              </span>
-            </button>
+              Back to Config
+            </Button>
           </div>
           <div className="flex-1 p-4 sm:p-6 overflow-hidden flex flex-col">
             <textarea
@@ -234,87 +248,77 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
               className="w-full h-full p-3 sm:p-4 bg-surface-highlight border border-border text-white rounded-lg sm:rounded-xl focus:outline-none resize-none font-mono text-xs sm:text-sm leading-relaxed"
             />
           </div>
-          <div className="p-4 sm:p-6 border-t border-border bg-surface rounded-b-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
-            <button
+          <div className="p-4 sm:p-6 border-t border-border bg-surface flex flex-col sm:flex-row justify-between items-center gap-3">
+            <Button
+              variant="ghost"
               onClick={handleClose}
-              className="hidden sm:block px-5 py-2.5 border border-border rounded-xl text-text-main font-semibold hover:bg-surface-highlight transition-colors"
+              className="hidden sm:flex"
             >
               Close
-            </button>
+            </Button>
             <div className="flex gap-2 sm:gap-3 w-full sm:w-auto">
-              <button
+              <Button
+                variant="secondary"
                 onClick={() => setStep("config")}
-                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 border border-border rounded-lg sm:rounded-xl text-text-main font-semibold hover:bg-surface-highlight transition-colors text-sm"
+                className="flex-1 sm:flex-initial"
               >
                 Regenerate
-              </button>
-              <button
+              </Button>
+              <Button
+                variant="primary"
                 onClick={copyProposalToClipboard}
-                className="flex-1 sm:flex-initial px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-white font-semibold rounded-lg sm:rounded-xl hover:bg-primary-hover shadow-glow transition-all active:scale-95 flex items-center justify-center gap-2 text-sm"
+                className="flex-1 sm:flex-initial shadow-glow"
+                leftIcon={<Copy className="w-4 h-4" />}
               >
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3"
-                  />
-                </svg>
-                <span className="hidden xs:inline">Copy Plain Text</span>
-                <span className="xs:hidden">Copy</span>
-              </button>
+                Copy Text
+              </Button>
             </div>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
 
-  // View 2: Configuration
+  // Render View 2: Configuration
   if (step === "config") {
     return (
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
-        <div className="bg-surface rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-lg flex flex-col border border-border max-h-[90vh] overflow-y-auto">
-          <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface rounded-t-2xl">
-            <h2 className="text-lg sm:text-xl font-bold font-display text-white">
-              Proposal Settings
-            </h2>
-            <button
+        <Card variant="surface" className="w-full sm:max-w-lg flex flex-col border border-border max-h-[90vh] overflow-y-auto p-0">
+          <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface sticky top-0 z-10">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/10 rounded-lg">
+                <Wand2 className="w-5 h-5 text-primary" />
+              </div>
+              <h2 className="text-lg sm:text-xl font-bold font-display text-white">
+                Proposal Settings
+              </h2>
+            </div>
+            <Button
+              variant="ghost"
               onClick={() => setStep("search")}
-              className="text-text-secondary hover:text-white transition-colors"
+              leftIcon={<ChevronLeft className="w-4 h-4" />}
             >
-              <span className="text-xs sm:text-sm font-semibold">Back</span>
-            </button>
+              Back
+            </Button>
           </div>
 
           <div className="p-4 sm:p-6 space-y-4 sm:space-y-6">
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-text-main mb-1.5 sm:mb-2">
                 Client Name <span className="text-red-400 font-normal">*</span>
-                <span className="text-text-secondary font-normal text-[10px] sm:text-xs ml-1">
-                  (Required for proposal)
-                </span>
               </label>
-              <input
-                type="text"
+              <Input
                 value={clientName}
                 onChange={(e) => setClientName(e.target.value)}
-                placeholder="e.g. John Smith, or Acme Corp"
-                className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-surface-highlight border border-border text-white rounded-lg sm:rounded-xl focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all placeholder:text-text-secondary text-sm"
+                placeholder="e.g. Acme Corp"
+                className="text-white"
+                leftIcon={<Briefcase className="w-4 h-4 text-text-secondary" />}
               />
             </div>
 
             <div>
               <label className="block text-xs sm:text-sm font-semibold text-text-main mb-2 sm:mb-3">
-                Sender Identity{" "}
-                <span className="text-text-secondary font-normal text-[10px] sm:text-xs">
-                  (Who is sending this?)
-                </span>
+                Sender Identity
               </label>
 
               <div className="grid grid-cols-2 gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -326,8 +330,11 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                       : "bg-surface-highlight border-border hover:border-text-secondary"
                   }`}
                 >
-                  <div className="font-bold text-white text-xs sm:text-sm mb-0.5 sm:mb-1">
-                    Agency
+                  <div className="flex items-center gap-2 mb-1">
+                    <Building2 className={`w-4 h-4 ${senderType === "agency" ? "text-primary" : "text-text-secondary"}`} />
+                    <div className="font-bold text-white text-xs sm:text-sm">
+                      Agency
+                    </div>
                   </div>
                   <div className="text-[10px] sm:text-xs text-text-secondary">
                     ProntX (Software & Design)
@@ -342,8 +349,11 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                       : "bg-surface-highlight border-border hover:border-text-secondary"
                   }`}
                 >
-                  <div className="font-bold text-white text-xs sm:text-sm mb-0.5 sm:mb-1">
-                    Individual
+                  <div className="flex items-center gap-2 mb-1">
+                    <User className={`w-4 h-4 ${senderType === "individual" ? "text-primary" : "text-text-secondary"}`} />
+                    <div className="font-bold text-white text-xs sm:text-sm">
+                      Individual
+                    </div>
                   </div>
                   <div className="text-[10px] sm:text-xs text-text-secondary">
                     Freelancer / Consultant
@@ -356,32 +366,19 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                   <label className="block text-[10px] sm:text-xs font-semibold text-text-secondary mb-1 sm:mb-1.5 uppercase tracking-wide">
                     Sender Name
                   </label>
-                  <input
-                    type="text"
+                  <Input
                     value={senderName}
                     onChange={(e) => setSenderName(e.target.value)}
-                    className="w-full px-3 sm:px-4 py-2 sm:py-2.5 bg-surface-highlight border border-border text-white rounded-lg sm:rounded-xl focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all text-sm"
+                    className="text-white"
                   />
                 </div>
               )}
             </div>
 
             <div className="p-3 sm:p-4 bg-surface-highlight/50 rounded-lg sm:rounded-xl border border-border">
-              <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
-                <svg
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                <span className="text-[10px] sm:text-xs font-bold text-white uppercase tracking-wider">
+              <div className="flex items-center gap-2 mb-1.5 sm:mb-2 text-primary">
+                <Info className="w-4 h-4" />
+                <span className="text-[10px] sm:text-xs font-bold uppercase tracking-wider text-white">
                   Note
                 </span>
               </div>
@@ -393,67 +390,32 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
             </div>
           </div>
 
-          <div className="p-4 sm:p-6 border-t border-border bg-surface rounded-b-2xl flex justify-end">
-            <button
+          <div className="p-4 sm:p-6 border-t border-border bg-surface flex justify-end">
+            <Button
               onClick={handleGenerateProposal}
               disabled={generatingProposal}
-              className="w-full sm:w-auto px-5 sm:px-6 py-2.5 bg-gradient-to-r from-primary-gradient-start to-primary-gradient-end text-white font-semibold rounded-lg sm:rounded-xl hover:brightness-110 shadow-glow transition-all active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 text-sm"
+              isLoading={generatingProposal}
+              variant="primary"
+              className="w-full sm:w-auto shadow-glow"
+              leftIcon={!generatingProposal && <Wand2 className="w-4 h-4" />}
             >
-              {generatingProposal ? (
-                <>
-                  <svg
-                    className="animate-spin h-4 w-4"
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                  >
-                    <circle
-                      className="opacity-25"
-                      cx="12"
-                      cy="12"
-                      r="10"
-                      stroke="currentColor"
-                      strokeWidth="4"
-                    ></circle>
-                    <path
-                      className="opacity-75"
-                      fill="currentColor"
-                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                    ></path>
-                  </svg>
-                  Writing Proposal...
-                </>
-              ) : (
-                "Generate Proposal"
-              )}
-            </button>
+              Generate Proposal
+            </Button>
           </div>
-        </div>
+        </Card>
       </div>
     );
   }
 
-  // View 1: Main Search & Selection (Default)
+  // Render View 1: Main Search & Selection (Default)
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
-      <div className="bg-surface rounded-t-2xl sm:rounded-2xl shadow-2xl w-full sm:max-w-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-border">
+      <Card variant="surface" className="w-full sm:max-w-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-border p-0 overflow-hidden">
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface z-10 rounded-t-2xl">
+        <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface sticky top-0 z-10">
           <div className="flex items-center gap-2 sm:gap-3">
             <div className="bg-primary text-white p-1.5 sm:p-2 rounded-lg shadow-glow">
-              <svg
-                className="w-4 h-4 sm:w-5 sm:h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19.428 15.428a2 2 0 00-1.022-.547l-2.384-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"
-                />
-              </svg>
+              <Sparkles className="w-4 h-4 sm:w-5 sm:h-5" />
             </div>
             <div>
               <h2 className="text-base sm:text-xl font-bold font-display text-white">
@@ -464,24 +426,14 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
               </p>
             </div>
           </div>
-          <button
+          <Button
+            variant="ghost"
+            size="icon"
             onClick={handleClose}
-            className="text-text-secondary hover:text-white transition-colors p-1"
+            className="text-text-secondary hover:text-white"
           >
-            <svg
-              className="w-5 h-5 sm:w-6 sm:h-6"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+            <X className="w-6 h-6" />
+          </Button>
         </div>
 
         {/* Content */}
@@ -498,54 +450,16 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
               placeholder="e.g., The client needs a fintech dashboard with dark mode and real-time stock visualization..."
             />
             <div className="flex justify-end">
-              <button
+              <Button
                 onClick={handleAnalyze}
                 disabled={loading || !requirements.trim()}
-                className="px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-white font-semibold rounded-lg sm:rounded-xl hover:bg-primary-hover disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-glow active:scale-95 flex items-center gap-2 text-sm"
+                isLoading={loading}
+                variant="primary"
+                className="shadow-glow"
+                leftIcon={!loading && <Sparkles className="w-4 h-4" />}
               >
-                {loading ? (
-                  <>
-                    <svg
-                      className="animate-spin h-5 w-5 text-white"
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                      ></circle>
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      ></path>
-                    </svg>
-                    Analyzing...
-                  </>
-                ) : (
-                  <>
-                    <span>Analyze Matches</span>
-                    <svg
-                      className="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M13 10V3L4 14h7v7l9-11h-7z"
-                      />
-                    </svg>
-                  </>
-                )}
-              </button>
+                Analyze Matches
+              </Button>
             </div>
           </div>
 
@@ -555,19 +469,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
           <div>
             {!hasSearched && !loading && (
               <div className="text-center py-6 sm:py-8 text-text-secondary">
-                <svg
-                  className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 opacity-20"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-                  />
-                </svg>
+                <Search className="w-10 h-10 sm:w-12 sm:h-12 mx-auto mb-2 sm:mb-3 opacity-20" />
                 <p className="text-xs sm:text-sm">
                   Enter requirements above to see AI-recommended projects.
                 </p>
@@ -577,19 +479,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
             {hasSearched && (
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-primary/10 border border-primary/20 rounded-lg sm:rounded-xl">
-                  <svg
-                    className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
+                  <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
                   <p className="text-xs sm:text-sm text-text-main">{message}</p>
                 </div>
 
@@ -623,19 +513,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                               }`}
                             >
                               {isSelected && (
-                                <svg
-                                  className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 text-white"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={3}
-                                    d="M5 13l4 4L19 7"
-                                  />
-                                </svg>
+                                <Check className="w-3 h-3 text-white" />
                               )}
                             </div>
                             <div className="flex-1 min-w-0">
@@ -643,9 +521,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                                 <h4 className="font-bold text-white font-display text-sm sm:text-base truncate">
                                   {project.name}
                                 </h4>
-                                <span className="text-[9px] sm:text-[10px] uppercase bg-surface border border-border px-1.5 sm:px-2 py-0.5 rounded text-text-secondary w-fit flex-shrink-0">
-                                  {project.category}
-                                </span>
+                                <Badge className="w-fit">{project.category}</Badge>
                               </div>
                               <p className="text-[10px] sm:text-xs text-primary mb-1.5 sm:mb-2 font-semibold">
                                 Match:{" "}
@@ -675,55 +551,46 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 sm:p-6 border-t border-border bg-surface rounded-b-2xl flex flex-col sm:flex-row justify-between items-center gap-3">
+        <div className="p-4 sm:p-6 border-t border-border bg-surface flex flex-col sm:flex-row justify-between items-center gap-3">
           <span className="text-xs sm:text-sm text-text-secondary order-2 sm:order-1">
             {selectedResultIds.size} projects selected
           </span>
           <div className="flex gap-2 sm:gap-3 w-full sm:w-auto order-1 sm:order-2">
-            <button
+            <Button
+              variant="secondary"
               onClick={handleClose}
-              className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 border border-border rounded-lg sm:rounded-xl text-text-main font-semibold hover:bg-surface-highlight transition-colors text-sm"
+              className="flex-1 sm:flex-initial"
             >
               Cancel
-            </button>
+            </Button>
 
             {hasSearched && (
-              <button
+              <Button
+                variant="secondary"
                 onClick={handleProceedToConfig}
                 disabled={selectedResultIds.size === 0}
-                className="flex-1 sm:flex-initial px-4 sm:px-5 py-2 sm:py-2.5 bg-surface-highlight border border-primary/30 text-primary font-semibold rounded-lg sm:rounded-xl hover:bg-primary/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-1.5 sm:gap-2 text-sm"
+                className="flex-1 sm:flex-initial bg-surface-highlight border-primary/30 text-primary hover:bg-primary/10"
+                leftIcon={<FileText className="w-4 h-4" />}
               >
-                <svg
-                  className="w-3.5 h-3.5 sm:w-4 sm:h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
                 <span className="hidden xs:inline">Generate Proposal</span>
                 <span className="xs:hidden">Proposal</span>
-              </button>
+              </Button>
             )}
 
-            <button
+            <Button
+              variant="primary"
               onClick={handleApply}
               disabled={selectedResultIds.size === 0}
-              className="flex-1 sm:flex-initial px-4 sm:px-6 py-2 sm:py-2.5 bg-primary text-white border border-border rounded-lg sm:rounded-xl hover:text-white hover:bg-primary/70 disabled:opacity-50 disabled:cursor-not-allowed shadow-glow transition-all active:scale-95 text-sm"
+              className="flex-1 sm:flex-initial shadow-glow"
             >
               <span className="hidden xs:inline">
                 Select {selectedResultIds.size}
               </span>
               <span className="xs:hidden">Select</span>
-            </button>
+            </Button>
           </div>
         </div>
-      </div>
+      </Card>
     </div>
   );
 };

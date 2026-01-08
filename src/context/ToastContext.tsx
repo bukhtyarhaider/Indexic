@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
+import { Check, Info, X } from "lucide-react";
 
 type ToastType = "success" | "error" | "info";
 
@@ -60,56 +61,20 @@ export const ToastProvider: React.FC<ToastProviderProps> = ({ children }) => {
       case "error":
         return (
           <div className="bg-red-500 rounded-full p-1">
-            <svg
-              className="w-3 h-3 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
+            <X className="w-3 h-3 text-white" />
           </div>
         );
       case "info":
         return (
           <div className="bg-blue-500 rounded-full p-1">
-            <svg
-              className="w-3 h-3 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
+            <Info className="w-3 h-3 text-white" />
           </div>
         );
       case "success":
       default:
         return (
           <div className="bg-primary rounded-full p-1">
-            <svg
-              className="w-3 h-3 text-white"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={3}
-                d="M5 13l4 4L19 7"
-              />
-            </svg>
+            <Check className="w-3 h-3 text-white" />
           </div>
         );
     }
