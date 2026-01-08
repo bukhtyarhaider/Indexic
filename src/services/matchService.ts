@@ -61,10 +61,8 @@ export const getProjectRecommendations = async (
     };
   } catch (error) {
     console.error("Project Recommendation Error:", error);
-    return {
-      recommendations: [],
-      message: "Failed to generate recommendations. Please try again.",
-    };
+    // Throw matchService error so UI can display it
+    throw error;
   }
 };
 
