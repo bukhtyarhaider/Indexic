@@ -404,6 +404,32 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             </div>
           </div>
 
+          <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-2 -mx-4 px-4 sm:mx-0 sm:px-0 scrollbar-hide">
+            <button
+              onClick={() => setFilters({ ...filters, category: "All" })}
+              className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border ${
+                filters.category === "All"
+                  ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                  : "bg-surface-highlight/50 text-text-secondary border-transparent hover:border-white/10 hover:text-white hover:bg-surface-highlight"
+              }`}
+            >
+              All Projects
+            </button>
+            {CATEGORY_OPTIONS.map((c) => (
+              <button
+                key={c}
+                onClick={() => setFilters({ ...filters, category: c })}
+                className={`whitespace-nowrap px-4 py-2 rounded-full text-xs sm:text-sm font-medium transition-all duration-200 border ${
+                  filters.category === c
+                    ? "bg-primary text-white border-primary shadow-lg shadow-primary/20"
+                    : "bg-surface-highlight/50 text-text-secondary border-transparent hover:border-white/10 hover:text-white hover:bg-surface-highlight"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+
           <Card
             variant="surface"
             className="p-1.5 flex flex-col gap-2 shadow-sm"
@@ -571,7 +597,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             </div>
           </div>
         ) : (
-          <>
+          <div className="min-h-[60vh] flex flex-col transition-all duration-300">
             {viewMode === "grid" ? (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
                 {filteredProjects.map((project) => (
@@ -600,7 +626,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
             )}
 
             {filteredProjects.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-20 bg-surface rounded-2xl border border-dashed border-border mt-4">
+              <div className="flex-1 flex flex-col items-center justify-center py-20 bg-surface rounded-2xl border border-dashed border-border mt-4">
                 <div className="p-4 rounded-full bg-surface-highlight mb-4">
                   <SearchX className="w-10 h-10 text-text-secondary" />
                 </div>
@@ -621,7 +647,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onLogout }) => {
                 </button>
               </div>
             )}
-          </>
+          </div>
         )}
       </main>
 
