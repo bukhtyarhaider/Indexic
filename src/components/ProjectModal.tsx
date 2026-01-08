@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Project, ProjectCategory, LinkType } from "../types";
 import { CATEGORY_OPTIONS, LINK_TYPE_OPTIONS } from "../constants";
 import { generateProjectEnhancements } from "../services/geminiService";
+import { normalizeTag, normalizeTags } from "../utils/tagNormalization";
 import { useToast } from "../context/ToastContext";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
@@ -84,10 +85,11 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
           formData.description || "",
           formData.category
         );
+      const normalizedSuggestions = normalizeTags(suggestedTags);
       setFormData((prev) => ({
         ...prev,
         description: refinedDescription,
-        tags: Array.from(new Set([...(prev.tags || []), ...suggestedTags])),
+        tags: normalizeTags([...(prev.tags || []), ...normalizedSuggestions]),
       }));
     } catch (e) {
       console.error("Enhancement error:", e);
@@ -124,9 +126,10 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
   const handleAddTag = (e: React.KeyboardEvent) => {
     if (e.key === "Enter" && tagInput.trim()) {
       e.preventDefault();
+      const normalized = normalizeTag(tagInput.trim());
       setFormData((prev) => ({
         ...prev,
-        tags: [...(prev.tags || []), tagInput.trim()],
+        tags: normalizeTags([...(prev.tags || []), normalized]),
       }));
       setTagInput("");
     }
@@ -203,7 +206,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                   }
                   placeholder="e.g. Portfolio v3"
                   className="bg-surface-highlight border-border text-white focus:ring-primary focus:border-primary"
-                  leftIcon={<FolderOpen className="w-4 h-4 text-text-secondary" />}
+                  leftIcon={
+                    <FolderOpen className="w-4 h-4 text-text-secondary" />
+                  }
                 />
               </div>
 
@@ -249,7 +254,9 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                   isLoading={loading}
                   className="text-primary hover:text-primary-hover hover:bg-primary/10 p-1 h-auto text-[10px] sm:text-xs font-bold uppercase tracking-wide gap-1.5"
                 >
-                  {!loading && <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />}
+                  {!loading && (
+                    <Sparkles className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
+                  )}
                   AI Enhance
                 </Button>
               </div>
@@ -263,7 +270,7 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
                   placeholder="Describe the project's goals, technologies used, and your role..."
                 />
                 <div className="absolute top-3 right-3 text-text-secondary pointer-events-none">
-                    <FileText className="w-4 h-4 opacity-20" />
+                  <FileText className="w-4 h-4 opacity-20" />
                 </div>
               </div>
             </div>
@@ -322,12 +329,12 @@ export const ProjectModal: React.FC<ProjectModalProps> = ({
 
             {/* Links Section */}
             <div className="space-y-3 pt-2 border-t border-white/10">
-                <div className="flex items-center gap-2 mb-1">
-                    <LinkIcon className="w-4 h-4 text-text-secondary" />
-                    <label className="block text-xs sm:text-sm font-semibold text-text-main">
-                        Project Links
-                    </label>
-                </div>
+              <div className="flex items-center gap-2 mb-1">
+                <LinkIcon className="w-4 h-4 text-text-secondary" />
+                <label className="block text-xs sm:text-sm font-semibold text-text-main">
+                  Project Links
+                </label>
+              </div>
 
               {/* Add Link Row */}
               <div className="flex flex-col sm:flex-row gap-2">

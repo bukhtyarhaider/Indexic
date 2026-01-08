@@ -1,5 +1,6 @@
 import { supabase } from "../lib/supabase";
 import type { Project, ProjectLink } from "../types";
+import { normalizeTags } from "../utils/tagNormalization";
 
 /**
  * Database row type (matching Supabase table structure)
@@ -43,7 +44,7 @@ const projectToInsert = (project: Omit<Project, "id">, userId: string) => ({
   description: project.description,
   category: project.category,
   profile_owner: project.profileOwner,
-  tags: project.tags,
+  tags: normalizeTags(project.tags),
   links: project.links,
   thumbnail_url: project.thumbnailUrl ?? null,
   last_modified: new Date(project.lastModified).toISOString(),
@@ -61,7 +62,7 @@ const projectToUpdate = (project: Partial<Project>) => {
   if (project.category !== undefined) update.category = project.category;
   if (project.profileOwner !== undefined)
     update.profile_owner = project.profileOwner;
-  if (project.tags !== undefined) update.tags = project.tags;
+  if (project.tags !== undefined) update.tags = normalizeTags(project.tags);
   if (project.links !== undefined) update.links = project.links;
   if (project.thumbnailUrl !== undefined)
     update.thumbnail_url = project.thumbnailUrl ?? null;

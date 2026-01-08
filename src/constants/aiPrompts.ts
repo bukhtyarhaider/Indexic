@@ -43,6 +43,8 @@ Project Name: ${name}
 Raw Input: ${rawDescription}
 Category: ${category}
 
+For tags, please suggest tags from these categories: Domain (Business area), Platform (Web/Mobile), Style (Design style), Feature (Key functionality), Technology (Stack). Use standard industry terms.
+
 Output strict JSON format:
 {
   "refinedDescription": "A professional, concise, client-facing description (max 2 sentences).",
