@@ -113,6 +113,17 @@ class GeminiClient {
         );
       }
 
+      // Model overloaded (503)
+      if (
+        message.includes("503") ||
+        message.includes("overloaded") ||
+        message.includes("unavailable")
+      ) {
+        return new Error(
+          "The AI model is currently overloaded. Please try again in 1-2 minutes."
+        );
+      }
+
       // Network errors
       if (message.includes("fetch") || message.includes("network")) {
         return new Error(

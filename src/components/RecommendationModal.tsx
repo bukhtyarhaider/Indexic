@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Project } from "../types";
 import { RecommendationResult } from "../types/match";
 import {
@@ -8,6 +8,7 @@ import {
   validateProposalConfig,
 } from "../services/matchService";
 import { useToast } from "../context/ToastContext";
+import { useAuth } from "../context/AuthContext";
 import {
   Sparkles,
   X,
@@ -72,11 +73,19 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   const [hasSearched, setHasSearched] = useState(false);
 
   // Config State
+  const { user } = useAuth();
   const [clientName, setClientName] = useState("");
   const [senderType, setSenderType] = useState<"agency" | "individual">(
     "agency"
   );
-  const [senderName, setSenderName] = useState("Bukhtyar Haider");
+  const [senderName, setSenderName] = useState(user?.user_metadata?.full_name);
+
+  // Update sender name when user loads
+  useEffect(() => {
+    if (user?.user_metadata?.full_name) {
+      setSenderName(user.user_metadata.full_name);
+    }
+  }, [user]);
 
   // Proposal State
   const [proposal, setProposal] = useState<string | null>(null);
@@ -223,7 +232,10 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   if (step === "proposal" && proposal) {
     return (
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
-        <Card variant="surface" className="w-full sm:max-w-3xl h-[90vh] sm:h-[85vh] flex flex-col border border-border p-0 overflow-hidden">
+        <Card
+          variant="surface"
+          className="w-full sm:max-w-3xl h-[90vh] sm:h-[85vh] flex flex-col border border-border p-0 overflow-hidden"
+        >
           <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface sticky top-0 z-10">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
@@ -283,7 +295,10 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   if (step === "config") {
     return (
       <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
-        <Card variant="surface" className="w-full sm:max-w-lg flex flex-col border border-border max-h-[90vh] overflow-y-auto p-0">
+        <Card
+          variant="surface"
+          className="w-full sm:max-w-lg flex flex-col border border-border max-h-[90vh] overflow-y-auto p-0"
+        >
           <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface sticky top-0 z-10">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-primary/10 rounded-lg">
@@ -331,7 +346,13 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <Building2 className={`w-4 h-4 ${senderType === "agency" ? "text-primary" : "text-text-secondary"}`} />
+                    <Building2
+                      className={`w-4 h-4 ${
+                        senderType === "agency"
+                          ? "text-primary"
+                          : "text-text-secondary"
+                      }`}
+                    />
                     <div className="font-bold text-white text-xs sm:text-sm">
                       Agency
                     </div>
@@ -350,7 +371,13 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-1">
-                    <User className={`w-4 h-4 ${senderType === "individual" ? "text-primary" : "text-text-secondary"}`} />
+                    <User
+                      className={`w-4 h-4 ${
+                        senderType === "individual"
+                          ? "text-primary"
+                          : "text-text-secondary"
+                      }`}
+                    />
                     <div className="font-bold text-white text-xs sm:text-sm">
                       Individual
                     </div>
@@ -410,7 +437,10 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
   // Render View 1: Main Search & Selection (Default)
   return (
     <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 bg-background/80 backdrop-blur-sm">
-      <Card variant="surface" className="w-full sm:max-w-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-border p-0 overflow-hidden">
+      <Card
+        variant="surface"
+        className="w-full sm:max-w-3xl max-h-[90vh] sm:max-h-[85vh] flex flex-col border border-border p-0 overflow-hidden"
+      >
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-border flex justify-between items-center bg-surface sticky top-0 z-10">
           <div className="flex items-center gap-2 sm:gap-3">
@@ -479,7 +509,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
             {hasSearched && (
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-start gap-2 sm:gap-3 p-3 sm:p-4 bg-primary/10 border border-primary/20 rounded-lg sm:rounded-xl">
-                  <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary flex-shrink-0 mt-0.5" />
+                  <Info className="w-4 h-4 sm:w-5 sm:h-5 text-primary shrink-0 mt-0.5" />
                   <p className="text-xs sm:text-sm text-text-main">{message}</p>
                 </div>
 
@@ -506,7 +536,7 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                         >
                           <div className="flex items-start gap-2.5 sm:gap-4">
                             <div
-                              className={`mt-0.5 sm:mt-1 w-4 h-4 sm:w-5 sm:h-5 rounded border flex items-center justify-center flex-shrink-0 transition-colors ${
+                              className={`mt-0.5 sm:mt-1 w-4 h-4 sm:w-5 sm:h-5 rounded border flex items-center justify-center shrink-0 transition-colors ${
                                 isSelected
                                   ? "bg-primary border-primary"
                                   : "border-text-secondary bg-transparent"
@@ -521,7 +551,9 @@ export const RecommendationModal: React.FC<RecommendationModalProps> = ({
                                 <h4 className="font-bold text-white font-display text-sm sm:text-base truncate">
                                   {project.name}
                                 </h4>
-                                <Badge className="w-fit">{project.category}</Badge>
+                                <Badge className="w-fit">
+                                  {project.category}
+                                </Badge>
                               </div>
                               <p className="text-[10px] sm:text-xs text-primary mb-1.5 sm:mb-2 font-semibold">
                                 Match:{" "}
